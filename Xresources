@@ -1,0 +1,32 @@
+!! No sample file used.
+
+!! Native transparency for rxvt-unicode
+! URxvt*transparent: true
+! URxvt*shading: 110
+
+!! True transparency for rxvt-unicode
+! URxvt*depth: 32
+! URxvt*background: [95]#3f3f3f
+
+!! Scrollbar settings for rxvt-unicode
+URxvt*scrollBar_right: true
+URxvt*scrollstyle: xterm
+
+!! Font settings
+! URxvt*font: xft:MesloLGS:size=9
+URxvt*font: -xos4-terminus-medium-r-normal-*-*-140-*-*-c-*-iso8859-5
+URxvt*boldFont: -xos4-terminus-bold-r-normal-*-*-140-*-*-c-*-iso8859-5
+xterm*faceName: MesloLGS:size=9
+emacs*font: MesloLGS-9
+
+!! Font settings from infinality-bundle 
+Xft.dpi: 96
+Xft.antialias: true
+Xft.autohint: false
+Xft.hinting: true
+Xft.hintstyle: hintslight
+Xft.lcdfilter: lcddefault
+Xft.rgba: rgb
+
+!! 256 color support for rxvt-unicode
+! URxvt*termName: xterm-256color

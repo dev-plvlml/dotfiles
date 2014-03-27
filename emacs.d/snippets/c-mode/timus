@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: timus
+# key: timus
+# --
+#include <stdio.h>
+
+int main() {
+#ifndef ONLINE_JUDGE
+  freopen("${1:input.txt}", "rt", stdin);
+  // freopen("${2:output.txt}", "wt", stdout);
+#endif // ONLINE_JUDGE
+  $0
+
+  return 0;
+}

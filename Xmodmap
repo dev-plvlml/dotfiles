@@ -1,0 +1,7 @@
+!! No sample file used.
+
+!! Additional modifier key
+clear Mod4
+keycode 134 = Menu NoSymbol Menu
+keycode 135 = Super_R NoSymbol Super_R
+add Mod4 = Super_L Super_R
