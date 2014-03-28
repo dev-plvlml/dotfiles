@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ## Based on a default ~/.bash_profile
 ## which is a copy of /etc/skel/.bash_profile
 

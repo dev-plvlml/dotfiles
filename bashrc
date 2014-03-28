@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ## Based on a default ~/.bashrc
 ## which is a copy of /etc/skel/.bashrc
 

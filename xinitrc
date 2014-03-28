@@ -43,6 +43,7 @@ urxvtd -q -f -o
 
 ## Emacs daemon
 emacs --daemon
+EDITOR=emacsclient
 
 ## Composite manager
 unagi &
