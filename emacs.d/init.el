@@ -96,6 +96,9 @@
 (package-initialize)
 (setq package-enable-at-startup nil)
 
+;; (when (require 'tabbar nil :noerror)
+;;   (tabbar-mode 1))
+
 (when (require 'hlinum nil :noerror)
   (hlinum-activate))
 
@@ -123,12 +126,11 @@
 ;;   (setq-default flycheck-clang-language-standard "c++11"))
 
 (when (require 'flymake nil :noerror)
+  ;; (require 'flymake-cursor nil :noerror)
   (add-hook 'find-file-hook 'flymake-find-file-hook)
   (add-to-list 'flymake-allowed-file-name-masks '("\\.[fF]\\(?:90\\|95\\|03\\|08\\)?\\'" flymake-simple-make-init))
   (add-to-list 'flymake-allowed-file-name-masks '("\\.f\\(?:or\\|pp\\|tn\\)\\'" flymake-simple-make-init))
   (add-to-list 'flymake-allowed-file-name-masks '("\\.F\\(?:OR\\|PP\\|TN\\)\\'" flymake-simple-make-init)))
-
-(require 'flymake-cursor nil :noerror)
 
 (autoload 'flymake-lua-load "flymake-lua" nil t)
 (add-hook 'lua-mode-hook 'flymake-lua-load)
@@ -185,6 +187,8 @@
 (add-hook 'c++-mode-hook 'my-add-ac-source-clang-async)
 (add-hook 'objc-mode-hook 'my-add-ac-source-clang-async)
 
+; NOTE: set ac-clang-cflags in .dir_locals.el
+
 (when (require 'auto-complete-c-headers nil :noerror)
   (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2" :append) ; TODO
   (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2/backward" :append)) ; TODO
@@ -193,20 +197,31 @@
 (add-hook 'c-mode-hook 'my-add-ac-source-c-headers)
 (add-hook 'c++-mode-hook 'my-add-ac-source-c-headers)
 
-(defvar my-achead-include-directories)	; TODO
+(defvar my-achead-include-directories '()) ; NOTE: set in .dir_locals.el
 (defun my-get-achead-include-directories ()
   (append achead:include-directories my-achead-include-directories))
 (setq achead:get-include-directories-function 'my-get-achead-include-directories)
 
+;; (eval-after-load "eldoc" '(progn (require 'eldoc-extension nil :noerror)))
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
-(eval-after-load "eldoc" '(progn (require 'eldoc-extension nil :noerror)))
+
+(autoload 'lua-mode "lua-mode" nil :interactive)
+(add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
+(add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
 (autoload 'pkgbuild-mode "pkgbuild-mode" nil :interactive)
 (add-to-list 'auto-mode-alist '("/PKGBUILD$" . pkgbuild-mode))
 
 (autoload 'muttrc-mode "muttrc-mode" nil :interactive)
 (add-to-list 'auto-mode-alist '("muttrc\\'" . muttrc-mode))
+
+(add-to-list 'auto-mode-alist '("\\.[fF]\\(?:90\\|95\\|03\\|08\\)\\'" . fortran-mode))
+(add-to-list 'auto-mode-alist '("\\.f\\(?:or\\|pp\\|tn\\|i\\)\\'" . fortran-mode))
+(add-to-list 'auto-mode-alist '("\\.F\\(?:OR\\|PP\\|TN\\)\\'" . fortran-mode))
+
+(autoload 'dummy-h-mode "dummy-h-mode" nil :interactive)
+(add-to-list 'auto-mode-alist '("\\.h$" . dummy-h-mode))
 
 (autoload 'google-set-c-style "google-c-style" nil :interactive)
 (add-hook 'c-mode-common-hook 'google-set-c-style)
@@ -221,9 +236,6 @@
  '(lambda ()
     (define-key c-mode-base-map "\C-m" 'reindent-then-newline-and-indent)
     (define-key c-mode-base-map [ret] 'reindent-then-newline-and-indent)))
-
-(autoload 'dummy-h-mode "dummy-h-mode" nil :interactive)
-(add-to-list 'auto-mode-alist '("\\.h$" . dummy-h-mode))
 
 (defface font-lock-float-face
   '((default :inherit default))
@@ -256,12 +268,11 @@
 (add-to-list 'semantic-lex-c-preprocessor-symbol-file '"/usr/local/include/mgl2/dllexport.h")
 
 (when (require 'diminish nil :noerror)
-  (diminish 'subword-mode)
   (diminish 'indent-guide-mode)
-  (add-hook
-   'eldoc-mode-hook
-   '(lambda ()
-      (diminish 'eldoc-mode))))
+  (add-hook 'eldoc-mode-hook '(lambda () (diminish 'eldoc-mode))))
+
+;; (defconst backup-directory (expand-file-name "backups" user-emacs-directory))
+;; (setq backup-directory-alist (list `("." . ,backup-directory)))
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)

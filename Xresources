@@ -13,9 +13,9 @@ URxvt*scrollBar_right: true
 URxvt*scrollstyle: xterm
 
 !! Font settings
-! URxvt*font: xft:MesloLGS:size=9
-URxvt*font: -xos4-terminus-medium-r-normal-*-*-140-*-*-c-*-iso8859-5
-URxvt*boldFont: -xos4-terminus-bold-r-normal-*-*-140-*-*-c-*-iso8859-5
+!URxvt*font: -xos4-terminus-medium-r-normal-*-*-140-*-*-c-*-iso8859-5
+!URxvt*boldFont: -xos4-terminus-bold-r-normal-*-*-140-*-*-c-*-iso8859-5
+URxvt*font: xft:MesloLGS:size=9
 xterm*faceName: MesloLGS:size=9
 emacs*font: MesloLGS-9
 
