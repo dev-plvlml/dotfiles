@@ -1,2 +1,28 @@
+# Emacs backup files
 *~
+
+# Emacs autosave files
 \#*#
+
+# Emacs lock files
+.#*
+
+# Emacs flymake-mode
+*_flymake.*
+
+# Vim swap files
+*.sw?
+
+# Mac folders
+.DS_Store
+
+# Win binary files
+*.obj
+*.exe
+*.dll
+*.lib
+
+# *nix binary files
+*.o
+lib*.a
+lib*.so

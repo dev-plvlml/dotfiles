@@ -43,13 +43,13 @@
    ;; CODE HELPERS
    global-semantic-idle-summary-mode
    ;; global-semantic-mru-bookmark-mode
-   ;; global-cedet-m3-minor-mode
+   global-cedet-m3-minor-mode
    ;; GAUDY CODE HELPERS
    ;; global-semantic-decoration-mode
    ;; global-semantic-stickyfunc-mode
    ;; global-semantic-idle-completions-mode
    ;; EXCESSIVE CODE HELPERS
-   ;; global-semantic-highlight-func-mode
+   global-semantic-highlight-func-mode
    global-semantic-idle-local-symbol-highlight-mode
    ))
 
@@ -91,6 +91,7 @@
 (ede-enable-generic-projects)
 
 (require 'package)
+(add-to-list 'package-archives '("tromey" . "http://tromey.com/elpa/") :append)
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") :append)
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") :append)
 (package-initialize)
@@ -98,6 +99,8 @@
 
 ;; (when (require 'tabbar nil :noerror)
 ;;   (tabbar-mode 1))
+
+;; (eval-after-load "font-lock" '(progn (require 'font-lock+ nil :noerror)))
 
 (when (require 'hlinum nil :noerror)
   (hlinum-activate))
@@ -156,7 +159,8 @@
 ;; Use the default config or...
 ;; (when (featurep 'auto-complete)
 ;;   (ac-config-default)
-;;   (ac-flyspell-workaround))
+;;   (ac-flyspell-workaround)
+;;   (ac-linum-workaround))
 
 ;; ...or use m4e5tr0's config
 (when (featurep 'auto-complete)
@@ -166,41 +170,46 @@
   (add-hook 'css-mode-hook 'ac-css-mode-setup)
   (add-hook 'auto-complete-mode-hook 'ac-common-setup)
   (global-auto-complete-mode 1)
-  (ac-flyspell-workaround))
+  (ac-flyspell-workaround)
+  (ac-linum-workaround))
 
 (defun my-add-ac-source-emacs-lisp ()
   (setq ac-sources (append '(ac-source-features ac-source-functions ac-source-variables ac-source-symbols) ac-sources)))
 
 (defun my-add-ac-source-semantic ()
+  (interactive)
   (setq ac-sources (append '(ac-source-semantic ac-source-semantic-raw) ac-sources)))
-;; (add-hook 'c-mode-common-hook 'my-add-ac-source-semantic)
 
 (defun my-add-ac-source-gtags ()
+  (interactive)
   (setq ac-sources (append '(ac-source-gtags) ac-sources)))
-;; (add-hook 'c-mode-common-hook 'my-add-ac-source-gtags)
 
-(require 'auto-complete-clang-async nil :noerror)
-(defun my-add-ac-source-clang-async ()
-  (setq ac-sources (append '(ac-source-clang-async) ac-sources))
-  (ac-clang-launch-completion-process))
-(add-hook 'c-mode-hook 'my-add-ac-source-clang-async)
-(add-hook 'c++-mode-hook 'my-add-ac-source-clang-async)
-(add-hook 'objc-mode-hook 'my-add-ac-source-clang-async)
+(when (require 'auto-complete-clang-async nil :noerror) ; NOTE: set ac-clang-cflags in .dir-locals.el
+  (defun my-add-ac-source-clang-async ()
+    (setq ac-sources (append '(ac-source-clang-async) ac-sources))
+    (ac-clang-launch-completion-process))
+  (add-hook 'c-mode-hook 'my-add-ac-source-clang-async)
+  (add-hook 'c++-mode-hook 'my-add-ac-source-clang-async))
 
-; NOTE: set ac-clang-cflags in .dir_locals.el
+;; (add-to-list 'load-path "~/0-linux/builds/irony-mode/elisp/")
+;; (when (require 'irony nil :noerror)
+;;   (defun my-enable-irony-mode ()
+;;     (when (member major-mode irony-known-modes)
+;;       (irony-mode 1)))
+;;   (add-hook 'c-mode-common-hook 'my-enable-irony-mode)
+;;   (irony-enable 'ac))
 
-(when (require 'auto-complete-c-headers nil :noerror)
+(when (require 'auto-complete-c-headers nil :noerror) ; NOTE: set my-achead-include-dirs in .dir-locals.el
+  (defun my-add-ac-source-c-headers ()
+    (add-to-list 'ac-sources 'ac-source-c-headers))
+  (add-hook 'c-mode-hook 'my-add-ac-source-c-headers)
+  (add-hook 'c++-mode-hook 'my-add-ac-source-c-headers)
   (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2" :append) ; TODO
-  (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2/backward" :append)) ; TODO
-(defun my-add-ac-source-c-headers ()
-  (add-to-list 'ac-sources 'ac-source-c-headers))
-(add-hook 'c-mode-hook 'my-add-ac-source-c-headers)
-(add-hook 'c++-mode-hook 'my-add-ac-source-c-headers)
-
-(defvar my-achead-include-directories '()) ; NOTE: set in .dir_locals.el
-(defun my-get-achead-include-directories ()
-  (append achead:include-directories my-achead-include-directories))
-(setq achead:get-include-directories-function 'my-get-achead-include-directories)
+  (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2/backward" :append) ; TODO
+  (defvar my-achead-include-dirs '())
+  (defun my-get-achead-include-dirs ()
+    (append achead:include-directories my-achead-include-dirs))
+  (setq achead:get-include-directories-function 'my-get-achead-include-dirs))
 
 ;; (eval-after-load "eldoc" '(progn (require 'eldoc-extension nil :noerror)))
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
@@ -237,6 +246,11 @@
     (define-key c-mode-base-map "\C-m" 'reindent-then-newline-and-indent)
     (define-key c-mode-base-map [ret] 'reindent-then-newline-and-indent)))
 
+(when (require 'diminish nil :noerror)
+  (diminish 'subword-mode)
+  (diminish 'indent-guide-mode)
+  (add-hook 'eldoc-mode-hook '(lambda () (diminish 'eldoc-mode))))
+
 (defface font-lock-float-face
   '((default :inherit default))
   "A face for highlighting floating point number literals.")
@@ -248,7 +262,7 @@
 (defun my-add-c-float-face ()
   (font-lock-add-keywords
    nil
-   '(("\\<\\(?:[0-9]+\\.[0-9]*\\|\\.[0-9]+\\)\\(?:[eE][-+]?[0-9]+\\)?[fFlL]?\\>" . 'font-lock-float-face)
+   '(("\\<\\(?:[0-9]+\\.[0-9]*\\|\\.[0-9]+\\)\\(?:[eE][-+]?[0-9]+\\)?[fFlL]?\\>" . 'font-lock-float-face) ; FIXME: 0. or .0
      ("\\<[0-9]+[eE][-+]?[0-9]+[fFlL]?\\>" . 'font-lock-float-face))))
 
 (defun my-add-c-number-face ()
@@ -267,14 +281,14 @@
 (add-to-list 'semantic-lex-c-preprocessor-symbol-file '"/usr/local/include/mgl2/config.h")
 (add-to-list 'semantic-lex-c-preprocessor-symbol-file '"/usr/local/include/mgl2/dllexport.h")
 
-(when (require 'diminish nil :noerror)
-  (diminish 'indent-guide-mode)
-  (add-hook 'eldoc-mode-hook '(lambda () (diminish 'eldoc-mode))))
-
-;; (defconst backup-directory (expand-file-name "backups" user-emacs-directory))
-;; (setq backup-directory-alist (list `("." . ,backup-directory)))
+(defconst backup-directory (expand-file-name "backups/" user-emacs-directory))
+(make-directory backup-directory :parents)
+(setq backup-directory-alist (list `("." . ,backup-directory)))
+(setq tramp-backup-directory-alist (list `("." . ,backup-directory)))
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (not (file-exists-p custom-file))
+  (shell-command (concat "touch " (custom-file))))
 (load custom-file)
 
 ;;; .emacs ends here
