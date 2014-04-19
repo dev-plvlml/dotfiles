@@ -62,8 +62,7 @@ editor_cmd = editor
 modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
-local layouts =
-{
+local layouts = {
     awful.layout.suit.floating,
     awful.layout.suit.tile,
     awful.layout.suit.tile.left,
@@ -437,6 +436,14 @@ client.connect_signal("manage", function (c, startup)
             and awful.client.focus.filter(c) then
             client.focus = c
         end
+    end)
+
+    c:connect_signal("property::floating", function(c)
+	if awful.client.floating.get(c) then
+	   awful.titlebar.show(c)
+	else
+	   awful.titlebar.hide(c)
+	end
     end)
 
     if not startup then
