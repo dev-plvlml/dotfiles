@@ -9,9 +9,13 @@
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-;; (scroll-bar-mode -1)   ; if emacs is compiled with toolkit scroll bars
+;; (scroll-bar-mode -1) ; if emacs is compiled with toolkit scroll bars
 (set-scroll-bar-mode 'right) ; if emacs is compiled without toolkit scroll bars
 (tooltip-mode -1)
+
+;; (set-frame-parameter nil 'right-divider-width 6)
+
+(setq inhibit-startup-screen t)
 
 (add-to-list 'custom-theme-load-path "~/0-linux/themes/")
 (add-to-list 'custom-theme-load-path "~/1-linux/themes/")
@@ -66,29 +70,32 @@
 ;; (global-semantic-tag-folding-mode 1)
 ;; (global-semantic-idle-breadcrumbs-mode 1)
 
-(require 'cedet-idutils nil :noerror)
+;; (require 'cedet-idutils nil :noerror)
 
 (when (cedet-ectag-version-check :noerror)
   (semantic-load-enable-primary-ectags-support))
 
-(when (require 'cedet-global nil :noerror)
-  (when (cedet-gnu-global-version-check :noerror)
-    (semanticdb-enable-gnu-global-databases 'c-mode)
-    (semanticdb-enable-gnu-global-databases 'c++-mode)
-    (semanticdb-enable-gnu-global-databases 'java-mode)
-    (semanticdb-enable-gnu-global-databases 'php-mode)
-    (semanticdb-enable-gnu-global-databases 'asm-mode)))
+;; (when (require 'cedet-global nil :noerror)
+;;   (when (cedet-gnu-global-version-check :noerror)
+;;     (semanticdb-enable-gnu-global-databases 'c-mode)
+;;     (semanticdb-enable-gnu-global-databases 'c++-mode)
+;;     (semanticdb-enable-gnu-global-databases 'java-mode)
+;;     (semanticdb-enable-gnu-global-databases 'php-mode)
+;;     (semanticdb-enable-gnu-global-databases 'asm-mode)))
 
-(when (require 'cedet-cscope nil :noerror)
-  (when (cedet-cscope-version-check :noerror)
-    (semanticdb-enable-cscope-databases)))
+;; (when (require 'cedet-cscope nil :noerror)
+;;   (when (cedet-cscope-version-check :noerror)
+;;     (semanticdb-enable-cscope-databases)))
 
-;; (semantic-clang-activate)
-
-(global-srecode-minor-mode 1)
+;; (global-srecode-minor-mode 1)
 
 (global-ede-mode 1)
 (ede-enable-generic-projects)
+
+(defun my-check-for-ede-project-el ()
+  (if (file-exists-p "Project.el")
+    (load-file "Project.el")))
+(add-hook 'find-file-hook 'my-check-for-ede-project-el)
 
 (require 'package)
 (add-to-list 'package-archives '("tromey" . "http://tromey.com/elpa/") :append)
@@ -100,12 +107,10 @@
 ;; (when (require 'tabbar nil :noerror)
 ;;   (tabbar-mode 1))
 
-;; (eval-after-load "font-lock" '(progn (require 'font-lock+ nil :noerror)))
-
 (when (require 'hlinum nil :noerror)
   (hlinum-activate))
 
-;; (require 'highlight-indentation nil :noerror)
+;; (require 'highlight-indentation nil :noerror) ; bad looking
 
 (when (require 'indent-guide nil :noerror)
   (indent-guide-global-mode 1)
@@ -116,7 +121,7 @@
 ;; (icomplete-mode 1)
 ;; (eval-after-load "icomplete" '(progn (require 'icomplete+ nil :noerror)))
 
-;; (electric-pair-mode 1)
+;; (electric-pair-mode 1) ; 
 
 ;; (when (require 'smartparens-config nil :noerror)
 ;;   (smartparens-global-mode 1))
@@ -128,8 +133,8 @@
 ;;   (global-flycheck-mode 1)
 ;;   (setq-default flycheck-clang-language-standard "c++11"))
 
+(eval-after-load "flymake" '(progn (require 'flymake-cursor nil :noerror)))
 (when (require 'flymake nil :noerror)
-  ;; (require 'flymake-cursor nil :noerror)
   (add-hook 'find-file-hook 'flymake-find-file-hook)
   (add-to-list 'flymake-allowed-file-name-masks '("\\.[fF]\\(?:90\\|95\\|03\\|08\\)?\\'" flymake-simple-make-init))
   (add-to-list 'flymake-allowed-file-name-masks '("\\.f\\(?:or\\|pp\\|tn\\)\\'" flymake-simple-make-init))
@@ -204,8 +209,8 @@
     (add-to-list 'ac-sources 'ac-source-c-headers))
   (add-hook 'c-mode-hook 'my-add-ac-source-c-headers)
   (add-hook 'c++-mode-hook 'my-add-ac-source-c-headers)
-  (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2" :append) ; TODO
-  (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2/backward" :append) ; TODO
+  (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2/" :append) ; TODO
+  (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2/backward/" :append) ; TODO
   (defvar my-achead-include-dirs '())
   (defun my-get-achead-include-dirs ()
     (append achead:include-directories my-achead-include-dirs))
