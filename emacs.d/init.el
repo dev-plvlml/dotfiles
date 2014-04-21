@@ -4,8 +4,8 @@
 
 ;;; Code:
 
-(setq max-specpdl-size 2600)		; original value was 1300
-(setq max-lisp-eval-depth 1200)		; original value was 600
+(setq max-specpdl-size 2600)
+(setq max-lisp-eval-depth 1200)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -13,13 +13,11 @@
 (set-scroll-bar-mode 'right) ; if emacs is compiled without toolkit scroll bars
 (tooltip-mode -1)
 
-;; (set-frame-parameter nil 'right-divider-width 6)
-
 (setq inhibit-startup-screen t)
 
 (add-to-list 'custom-theme-load-path "~/0-linux/themes/")
 (add-to-list 'custom-theme-load-path "~/1-linux/themes/")
-(load-theme 'zenburn-by-m4e5tr0 t)
+(load-theme 'zenburn-by-m4e5tr0 :no-confirm) ; TODO: custom-safe-themes
 
 (global-linum-mode 1)
 (global-hl-line-mode 1)
@@ -38,24 +36,21 @@
 ;; (semantic-load-enable-excessive-code-helpers)
 
 ;; ...or use m4e5tr0's config
-(setq
- semantic-default-submodes
- '(
-   ;; MINIMUM FEATURES
-   global-semantic-idle-scheduler-mode
-   global-semanticdb-minor-mode
-   ;; CODE HELPERS
-   global-semantic-idle-summary-mode
-   ;; global-semantic-mru-bookmark-mode
-   global-cedet-m3-minor-mode
-   ;; GAUDY CODE HELPERS
-   ;; global-semantic-decoration-mode
-   ;; global-semantic-stickyfunc-mode
-   ;; global-semantic-idle-completions-mode
-   ;; EXCESSIVE CODE HELPERS
-   global-semantic-highlight-func-mode
-   global-semantic-idle-local-symbol-highlight-mode
-   ))
+(setq semantic-default-submodes
+      '(;; MINIMUM FEATURES
+        global-semantic-idle-scheduler-mode
+        global-semanticdb-minor-mode
+        ;; CODE HELPERS
+        global-semantic-idle-summary-mode
+        ;; global-semantic-mru-bookmark-mode
+        global-cedet-m3-minor-mode
+        ;; GAUDY CODE HELPERS
+        ;; global-semantic-decoration-mode
+        ;; global-semantic-stickyfunc-mode
+        ;; global-semantic-idle-completions-mode
+        ;; EXCESSIVE CODE HELPERS
+        global-semantic-highlight-func-mode
+        global-semantic-idle-local-symbol-highlight-mode))
 
 (semantic-mode 1)
 
@@ -110,8 +105,6 @@
 (when (require 'hlinum nil :noerror)
   (hlinum-activate))
 
-;; (require 'highlight-indentation nil :noerror) ; bad looking
-
 (when (require 'indent-guide nil :noerror)
   (indent-guide-global-mode 1)
   (add-to-list 'indent-guide-inhibit-modes 'package-menu-mode))
@@ -119,9 +112,6 @@
 ;; (ido-mode 1)
 
 ;; (icomplete-mode 1)
-;; (eval-after-load "icomplete" '(progn (require 'icomplete+ nil :noerror)))
-
-;; (electric-pair-mode 1) ; 
 
 ;; (when (require 'smartparens-config nil :noerror)
 ;;   (smartparens-global-mode 1))
@@ -131,7 +121,7 @@
 
 ;; (when (require 'flycheck nil :noerror)
 ;;   (global-flycheck-mode 1)
-;;   (setq-default flycheck-clang-language-standard "c++11"))
+;;   (setq-mode-local c++-mode flycheck-clang-language-standard "c++11"))
 
 (eval-after-load "flymake" '(progn (require 'flymake-cursor nil :noerror)))
 (when (require 'flymake nil :noerror)
@@ -140,10 +130,10 @@
   (add-to-list 'flymake-allowed-file-name-masks '("\\.f\\(?:or\\|pp\\|tn\\)\\'" flymake-simple-make-init))
   (add-to-list 'flymake-allowed-file-name-masks '("\\.F\\(?:OR\\|PP\\|TN\\)\\'" flymake-simple-make-init)))
 
-(autoload 'flymake-lua-load "flymake-lua" nil t)
+(autoload 'flymake-lua-load "flymake-lua" nil :interactive)
 (add-hook 'lua-mode-hook 'flymake-lua-load)
 
-(autoload 'flymake-shell-load "flymake-shell" nil t)
+(autoload 'flymake-shell-load "flymake-shell" nil :interactive)
 (add-hook 'sh-set-shell-hook 'flymake-shell-load)
 
 (require 'rfringe nil :noerror)
@@ -151,10 +141,9 @@
 (when (require 'yasnippet nil :noerror)
   (yas-global-mode 1)
   (add-to-list 'auto-mode-alist '("/snippets/" . snippet-mode))
-  (add-hook
-   'yas-after-exit-snippet-hook
-   '(lambda ()
-      (indent-region yas-snippet-beg yas-snippet-end))))
+  (add-hook 'yas-after-exit-snippet-hook
+            '(lambda ()
+               (indent-region yas-snippet-beg yas-snippet-end))))
 
 ;; (when (require 'company nil :noerror)
 ;;   (global-company-mode 1))
@@ -170,7 +159,7 @@
 ;; ...or use m4e5tr0's config
 (when (featurep 'auto-complete)
   (setq-default ac-sources '(ac-source-yasnippet ac-source-filename))
-  (add-hook 'emacs-lisp-mode-hook 'my-add-ac-source-emacs-lisp) ; original function uses yasnippet
+  (add-hook 'emacs-lisp-mode-hook 'my-add-ac-source-emacs-lisp)
   (add-hook 'ruby-mode-hook 'ac-ruby-mode-setup)
   (add-hook 'css-mode-hook 'ac-css-mode-setup)
   (add-hook 'auto-complete-mode-hook 'ac-common-setup)
@@ -179,7 +168,8 @@
   (ac-linum-workaround))
 
 (defun my-add-ac-source-emacs-lisp ()
-  (setq ac-sources (append '(ac-source-features ac-source-functions ac-source-variables ac-source-symbols) ac-sources)))
+  (setq ac-sources
+        (append '(ac-source-features ac-source-functions ac-source-variables ac-source-symbols) ac-sources)))
 
 (defun my-add-ac-source-semantic ()
   (interactive)
@@ -189,34 +179,39 @@
   (interactive)
   (setq ac-sources (append '(ac-source-gtags) ac-sources)))
 
+;; (add-to-list 'load-path "~/0-linux/builds/irony-mode/elisp/")
+;; (when (require 'irony nil :noerror) ; lacks features
+;;   (add-hook 'c-mode-common-hook
+;;             '(lambda ()
+;;                (when (member major-mode irony-known-modes)
+;;                  (irony-mode 1))))
+;;   (irony-enable 'ac))
+
 (when (require 'auto-complete-clang-async nil :noerror) ; NOTE: set ac-clang-cflags in .dir-locals.el
   (defun my-add-ac-source-clang-async ()
     (setq ac-sources (append '(ac-source-clang-async) ac-sources))
     (ac-clang-launch-completion-process))
   (add-hook 'c-mode-hook 'my-add-ac-source-clang-async)
-  (add-hook 'c++-mode-hook 'my-add-ac-source-clang-async))
-
-;; (add-to-list 'load-path "~/0-linux/builds/irony-mode/elisp/")
-;; (when (require 'irony nil :noerror)
-;;   (defun my-enable-irony-mode ()
-;;     (when (member major-mode irony-known-modes)
-;;       (irony-mode 1)))
-;;   (add-hook 'c-mode-common-hook 'my-enable-irony-mode)
-;;   (irony-enable 'ac))
+  (add-hook 'c++-mode-hook
+	    '(lambda ()
+	       (setq ac-clang-cflags (append '("-std=c++11") ac-clang-cflags))
+	       (my-add-ac-source-clang-async))))
+  ;; (setq-mode-local c++-mode ac-clang-cflags '("-std=c++11"))
 
 (when (require 'auto-complete-c-headers nil :noerror) ; NOTE: set my-achead-include-dirs in .dir-locals.el
   (defun my-add-ac-source-c-headers ()
-    (add-to-list 'ac-sources 'ac-source-c-headers))
+    (setq ac-sources (append ac-sources '(ac-source-c-headers))))
   (add-hook 'c-mode-hook 'my-add-ac-source-c-headers)
   (add-hook 'c++-mode-hook 'my-add-ac-source-c-headers)
-  (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2/" :append) ; TODO
-  (add-to-list 'achead:include-directories "/usr/include/c++/4.8.2/backward/" :append) ; TODO
+  (setq-mode-local c++-mode achead:include-directories
+                   (append achead:include-directories
+                           '("/usr/include/c++/4.8.2/" ; NOTE: change on update
+                             "/usr/include/c++/4.8.2/backward/"))) ; NOTE: change on update
   (defvar my-achead-include-dirs '())
   (defun my-get-achead-include-dirs ()
     (append achead:include-directories my-achead-include-dirs))
   (setq achead:get-include-directories-function 'my-get-achead-include-dirs))
 
-;; (eval-after-load "eldoc" '(progn (require 'eldoc-extension nil :noerror)))
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
 
@@ -245,11 +240,10 @@
 ;; (add-hook 'c-mode-common-hook 'google-make-newline-indent)
 
 ;; ...or use m4e5tr0's config for reindent-then-newline-and-indent
-(add-hook
- 'c-mode-common-hook
- '(lambda ()
-    (define-key c-mode-base-map "\C-m" 'reindent-then-newline-and-indent)
-    (define-key c-mode-base-map [ret] 'reindent-then-newline-and-indent)))
+(add-hook 'c-mode-common-hook
+          '(lambda ()
+             (define-key c-mode-base-map "\C-m" 'reindent-then-newline-and-indent)
+             (define-key c-mode-base-map [ret] 'reindent-then-newline-and-indent)))
 
 (when (require 'diminish nil :noerror)
   (diminish 'subword-mode)
@@ -267,7 +261,7 @@
 (defun my-add-c-float-face ()
   (font-lock-add-keywords
    nil
-   '(("\\<\\(?:[0-9]+\\.[0-9]*\\|\\.[0-9]+\\)\\(?:[eE][-+]?[0-9]+\\)?[fFlL]?\\>" . 'font-lock-float-face) ; FIXME: 0. or .0
+   '(("\\<\\(?:[0-9]+\\.[0-9]*\\|\\.[0-9]+\\)\\(?:[eE][-+]?[0-9]+\\)?[fFlL]?\\>" . 'font-lock-float-face) ; FIXME: 0. and .0
      ("\\<[0-9]+[eE][-+]?[0-9]+[fFlL]?\\>" . 'font-lock-float-face))))
 
 (defun my-add-c-number-face ()
