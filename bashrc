@@ -13,6 +13,5 @@
 ## Use feh with tiling WM support
 alias feh='feh --geometry 1024x600 --scale-down'
 
-## Use emacs in client mode as the default editor
-## or use nano if emacs daemon is not running
-export EDITOR="emacsclient -t -a nano"
+## Use nano as the default editor
+export EDITOR="nano"
