@@ -26,3 +26,18 @@
 *.o
 lib*.a
 lib*.so
+
+# Fortran module files
+*.mod
+
+# Make dependency files
+*.d
+
+# Tag files
+TAGS
+tags
+GTAGS
+GRTAGS
+GPATH
+BROWSE
+cscope.out
