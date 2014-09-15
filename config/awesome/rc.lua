@@ -86,8 +86,8 @@ local layouts = {
 --     end
 -- end
 
-primary_wallpaper = "/home/m4e5tr0/1-photos/desktop/averni_from_movie.jpg"
-secondary_wallpaper = "/home/m4e5tr0/0-images/desktop/winterfell-3.jpg"
+primary_wallpaper = "/home/m4e5tr0/1-photos/desktop/averni_movie.jpg"
+secondary_wallpaper = "/home/m4e5tr0/0-images/desktop/winterfell_3.jpg"
 gears.wallpaper.maximized(primary_wallpaper, 1, false)
 for s = 2, screen.count() do
    gears.wallpaper.maximized(secondary_wallpaper, s, true)

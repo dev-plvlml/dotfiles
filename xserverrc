@@ -1,0 +1,14 @@
+#!/bin/sh
+
+## Is a copy of /etc/X11/xinit/xserverrc
+## which is needed for https://wiki.archlinux.org/index.php/xinitrc#Making_a_DE.2FWM_choice
+
+#
+# ~/.xserverrc
+#
+
+if [ -z "$XDG_VTNR" ]; then
+    exec /usr/bin/X -nolisten tcp "$@"
+else
+    exec /usr/bin/X -nolisten tcp "$@" vt$XDG_VTNR
+fi

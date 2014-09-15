@@ -11,6 +11,7 @@
 [[ $- != *i* ]] && return
 
 ## Use feh with tiling WM support
+## Based on feh(1)
 alias feh='feh --geometry 1024x600 --scale-down'
 
 ## Use nano as the default editor

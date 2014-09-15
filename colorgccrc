@@ -30,8 +30,8 @@
 # (Currently, colorgcc only understands these: g++ gcc c++ cc g77 f77 gcj)
 g++: /usr/lib/ccache/bin/g++
 gcc: /usr/lib/ccache/bin/gcc
-c++: /usr/lib/ccache/bin/g++
-cc:  /usr/lib/ccache/bin/gcc
+c++: /usr/lib/ccache/bin/c++
+cc:  /usr/lib/ccache/bin/cc
 g77: /usr/bin/gfortran
 f77: /usr/bin/gfortran
 gcj: /usr/bin/gcj
@@ -41,7 +41,7 @@ gcj: /usr/bin/gcj
 nocolor: dumb emacs
 
 # Text between ` and ' is usually source code.
-srcColor: bold cyan
+srcColor: yellow
 
 # Text other than a warning or error.
 introColor: reset
