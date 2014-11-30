@@ -1,0 +1,7 @@
+(when (require 'doxymacs nil :noerror)
+  (add-hook 'c-mode-common-hook 'doxymacs-mode)
+  (defun my-add-doxymacs-font-lock ()
+    (if (or (eq major-mode 'c-mode)
+	    (eq major-mode 'c++-mode))
+	(doxymacs-font-lock)))
+  (add-hook 'font-lock-mode-hook 'my-add-doxymacs-font-lock))

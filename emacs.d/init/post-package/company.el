@@ -2,6 +2,8 @@
   (global-company-mode 1))
 
 (when (require 'irony nil :noerror)
+  (setq-mode-local c++-mode irony-additional-clang-options '("-std=c++11"))
+  (setq w32-pipe-read-delay 0)
   (add-hook 'c-mode-hook 'irony-mode)
   (add-hook 'c++-mode-hook 'irony-mode)
   (add-hook 'objc-mode-hook 'irony-mode)

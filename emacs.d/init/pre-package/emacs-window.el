@@ -1,8 +1,10 @@
 ;; (scroll-bar-mode -1) ; FIXME: check if emacs is compiled with toolkit scroll bars
 (set-scroll-bar-mode 'right) ; FIXME: check if emacs is compiled without toolkit scroll bars
 
-(global-linum-mode 1)
-; (global-hl-line-mode 1) ; FIXME: should recenter on scrolling, not scroll conservatively
+(unless (daemonp) ; BUG: crashes Emacs daemon
+  (global-linum-mode 1))
+(unless (daemonp) ; BUG: crashes Emacs daemon
+  (global-hl-line-mode 1))
 
 (setq-default cursor-type 'bar)
 (setq blink-cursor-delay 60) ; NOTE: don't change order

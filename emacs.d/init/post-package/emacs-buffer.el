@@ -17,6 +17,11 @@
 (autoload 'muttrc-mode "muttrc-mode" nil :interactive)
 (add-to-list 'auto-mode-alist '("muttrc\\'" . muttrc-mode))
 
+(autoload 'markdown-mode "markdown-mode" nil :interactive)
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
 ;;; Minor modes
 
 (electric-pair-mode 1)
@@ -25,14 +30,14 @@
 
 (load-file (expand-file-name "init/post-package/google-c-style.el" user-emacs-directory))
 
-(when (require 'indent-guide nil :noerror)
-  (indent-guide-global-mode 1)
-  (add-to-list 'indent-guide-inhibit-modes 'package-menu-mode))
+(load-file (expand-file-name "init/post-package/doxymacs.el" user-emacs-directory))
+
+(load-file (expand-file-name "init/post-package/indent-guide.el" user-emacs-directory))
 
 (load-file (expand-file-name "init/post-package/yasnippet.el" user-emacs-directory))
 
 ;; (load-file (expand-file-name "init/post-package/auto-complete.el" user-emacs-directory))
 (load-file (expand-file-name "init/post-package/company.el" user-emacs-directory))
 
-(load-file (expand-file-name "init/post-package/flymake.el" user-emacs-directory))
-;; (load-file (expand-file-name "init/post-package/flycheck.el" user-emacs-directory))
+;; (load-file (expand-file-name "init/post-package/flymake.el" user-emacs-directory))
+(load-file (expand-file-name "init/post-package/flycheck.el" user-emacs-directory))

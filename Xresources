@@ -16,8 +16,8 @@ URxvt*scrollstyle: xterm
 !URxvt*font: -xos4-terminus-medium-r-normal-*-*-140-*-*-c-*-iso8859-5
 !URxvt*boldFont: -xos4-terminus-bold-r-normal-*-*-140-*-*-c-*-iso8859-5
 URxvt*font: xft:MesloLGS:size=9
-xterm*faceName: MesloLGS:size=9
-emacs*font: MesloLGS-9
+XTerm*faceName: MesloLGS:size=9
+Emacs*font: MesloLGS-9
 
 !! Font settings from infinality-bundle 
 Xft.dpi: 96

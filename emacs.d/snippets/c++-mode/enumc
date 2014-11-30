@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: enumc
+# key: enumc
+# --
+enum class ${1:Name}${2: : ${3:int}} {
+  $0
+}; // enum class $1

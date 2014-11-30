@@ -28,7 +28,7 @@
 (when (require 'auto-complete-clang-async nil :noerror)
   (defun my-add-ac-source-clang-async ()
     (setq-local ac-sources (append '(ac-source-clang-async) ac-sources))
-    (ac-clang-launch-completion-process)) ; FIXME: should not hide c-electric-...
+    (ac-clang-launch-completion-process)) ; BUG: hides c-electric-...
   (add-hook 'c-mode-hook 'my-add-ac-source-clang-async)
   (defvar cxxflags '()) ; NOTE: set in .dir-locals.el
   (defvar cxxflags-default '("-std=c++11"))
@@ -48,8 +48,8 @@
   (add-hook 'c++-mode-hook 'my-add-ac-source-c-headers)
   (setq-mode-local c++-mode achead:include-directories
                    (append achead:include-directories
-                           '("/usr/include/c++/4.9.0/" ; NOTE: change on update
-                             "/usr/include/c++/4.9.0/backward/"))) ; NOTE: change on update
+                           '("/usr/include/c++/4.9.2/" ; NOTE: change on update
+                             "/usr/include/c++/4.9.2/backward/"))) ; NOTE: change on update
   (defvar include-dirs '()) ; NOTE: set in .dir-locals.el
   (defun my-get-achead-include-dirs ()
     (append achead:include-directories include-dirs))

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: math
+# key: math
+# --
+#define _USE_MATH_DEFINES
+#include <cmath>
+$0

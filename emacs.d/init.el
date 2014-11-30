@@ -6,7 +6,7 @@
 
 (add-to-list 'custom-theme-load-path "~/0-linux/themes/")
 (add-to-list 'custom-theme-load-path "~/1-linux/themes/")
-(load-theme 'zenburn-by-m4e5tr0 :no-confirm)
+(load-theme 'zenburn-care :no-confirm)
 
 (setq max-specpdl-size 2600)
 (setq max-lisp-eval-depth 1200)
@@ -19,6 +19,12 @@
 (load-file (expand-file-name "init/post-package.el" user-emacs-directory))
 
 (load-file (expand-file-name "init/post-package/diminish.el" user-emacs-directory))
+
+(defun my-daemon-workaround()
+  (interactive)
+  (global-linum-mode 1) ;; NOTE: see init/pre-package/emacs-window.el
+  (global-hl-line-mode 1) ;; NOTE: see init/pre-package/emacs-window.el
+  (indent-guide-global-mode 1)) ;; NOTE: see init/post-package/indent-guide.el
 
 (defconst backup-directory (expand-file-name "backups/" user-emacs-directory))
 (make-directory backup-directory :parents)

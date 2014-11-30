@@ -28,8 +28,8 @@ if [ -s ~/.Xresources ]; then
 fi
 
 ## Terminal theme
-if [ -s ~/1-linux/themes/zenburn-by-m4e5tr0.Xresources ]; then
-    xrdb -merge ~/1-linux/themes/zenburn-by-m4e5tr0.Xresources
+if [ -s ~/1-linux/themes/zenburn-care.Xresources ]; then
+    xrdb -merge ~/1-linux/themes/zenburn-care.Xresources
 fi
 
 ## Udiskie autostart
@@ -43,6 +43,7 @@ urxvtd -q -f -o
 
 ## Emacs daemon
 emacs --daemon
+emacsclient -e "(my-daemon-workaround)"
 
 ## Composite manager
 unagi &
