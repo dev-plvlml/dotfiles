@@ -47,7 +47,7 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 -- beautiful.init("/usr/share/awesome/themes/default/theme.lua")
-beautiful.init("/home/m4e5tr0/1-linux/themes/zenburn-care.awesome.lua")
+beautiful.init("/home/m4e5tr0/1-linux/themes/zenburn-care/zenburn-care.awesome.lua")
 
 -- This is used later as the default terminal and editor to run.
 -- terminal = "xterm"
@@ -90,7 +90,7 @@ local layouts = {
 -- end
 
 primary_wallpaper = "/home/m4e5tr0/1-photos/desktop/averni_from-movie.jpg"
-secondary_wallpaper = "/home/m4e5tr0/0-images/desktop/winterfell_3.jpg"
+secondary_wallpaper = "/home/m4e5tr0/0-pictures/desktop/winterfell_3.jpg"
 gears.wallpaper.maximized(primary_wallpaper, 1, false)
 for s = 2, screen.count() do
    gears.wallpaper.maximized(secondary_wallpaper, s, true)
@@ -170,6 +170,7 @@ mytextclock_text = awful.widget.textclock()
 -- Create a background widget for the textclock
 -- See http://awesome.naquadah.org/wiki/Widgets_in_awesome#textbox
 mytextclock = wibox.widget.background()
+mytextclock:set_fg(beautiful.fg_minimize)
 mytextclock:set_bg(beautiful.bg_systray)
 mytextclock:set_widget(mytextclock_text)
 
@@ -424,6 +425,8 @@ awful.rules.rules = {
     { rule = { },
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
+		     -- Remove gaps between windows:
+		     size_hints_honor = false,
                      focus = awful.client.focus.filter,
                      raise = true,
                      keys = clientkeys,

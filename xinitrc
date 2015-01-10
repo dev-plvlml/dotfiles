@@ -28,8 +28,8 @@ if [ -s ~/.Xresources ]; then
 fi
 
 ## Terminal theme
-if [ -s ~/1-linux/themes/zenburn-care.Xresources ]; then
-    xrdb -merge ~/1-linux/themes/zenburn-care.Xresources
+if [ -s ~/1-linux/themes/zenburn-care/zenburn-care.Xresources ]; then
+    xrdb -merge ~/1-linux/themes/zenburn-care/zenburn-care.Xresources
 fi
 
 ## Udiskie autostart
