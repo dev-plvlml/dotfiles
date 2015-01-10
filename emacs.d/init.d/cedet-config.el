@@ -61,5 +61,3 @@
 ;; (add-hook 'find-file-hook 'my-load-ede-project-el)
 
 ;; (global-srecode-minor-mode 1)
-
-(load-file (expand-file-name "init/pre-package/cedet-custom.el" user-emacs-directory))

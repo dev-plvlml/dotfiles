@@ -1,0 +1,484 @@
+#+TITLE: My GNU Emacs configuration
+#+AUTHOR: Pavel 'M4E5TR0' Matcula
+#+STARTUP: odd
+
+* Frame visual appearance
+*** Built-in
+***** Main packages
+
+#+BEGIN_SRC emacs-lisp
+  (use-package menu-bar
+    :config (menu-bar-mode -1))
+
+  (use-package tool-bar
+    :config (tool-bar-mode -1))
+
+  (use-package scroll-bar
+    :config (progn
+              (if x-toolkit-scroll-bars
+                  (scroll-bar-mode -1)
+                (scroll-bar-mode 1)
+                (set-scroll-bar-mode 'right))))
+
+  (use-package linum
+    :idle (global-linum-mode 1)) ;; BUG: init crashes Emacs daemon
+
+  (use-package tooltip
+    :config (progn
+              (tooltip-mode 1)
+              (setq x-gtk-use-system-tooltips nil)))
+
+  ;; modeline
+  (column-number-mode 1)
+
+  ;; cursor
+  (setq-default cursor-type 'bar)
+  (add-hook 'overwrite-mode-hook
+            '(lambda ()
+               (if overwrite-mode
+                   (setq cursor-type 'box)
+                 (setq cursor-type 'bar))))
+
+  (setq-default cursor-in-non-selected-windows nil)
+
+  (setq blink-cursor-delay 60) ; NOTE: order matters
+  (setq blink-cursor-blinks 0) ; NOTE: order matters
+  (blink-cursor-mode 1)        ; NOTE: order matters
+
+  (use-package hl-line
+    :idle (global-hl-line-mode 1) ;; BUG: init crashes Emacs daemon
+    :config (progn
+              (defun my-hl-line-mode-off ()
+                (interactive)
+                (make-local-variable 'global-hl-line-mode)
+                (setq global-hl-line-mode nil))
+              (add-hook 'diff-mode-hook 'my-hl-line-mode-off)))
+#+END_SRC
+
+***** Extensions
+
+#+BEGIN_SRC emacs-lisp
+  (req-package hlinum
+    :require (linum)
+    :commands (hlinum-activate)
+    :init (add-hook 'linum-mode-hook 'hlinum-activate))
+#+END_SRC
+
+*** Third-party
+
+#+BEGIN_SRC emacs-lisp
+  (req-package tabbar
+    :config (progn
+              (tabbar-mode 1)
+              (setq tabbar-use-images nil)
+              (defun my-get-tabbar-tab-label (tab)
+                (concat " " (tabbar-buffer-tab-label tab) " "))
+              (setq tabbar-tab-label-function 'my-get-tabbar-tab-label)))
+#+END_SRC
+
+* Major editing modes
+*** Built-in
+***** Main packages
+
+#+BEGIN_SRC emacs-lisp
+  (use-package fortran
+    :config (progn
+              (add-to-list 'auto-mode-alist '("\\.[fF]\\(?:90\\|95\\|03\\|08\\)\\'" . fortran-mode))
+              (add-to-list 'auto-mode-alist '("\\.f\\(?:or\\|pp\\|tn\\|i\\)\\'" . fortran-mode))
+              (add-to-list 'auto-mode-alist '("\\.F\\(?:OR\\|PP\\|TN\\)\\'" . fortran-mode))))
+#+END_SRC
+
+***** Extensions
+
+#+BEGIN_SRC emacs-lisp
+  (req-package paradox
+    :require (package async)
+    :config (progn
+              (my-load-personal-file "paradox-config")))
+#+END_SRC
+
+*** Built-in: org-mode
+
+#+BEGIN_SRC emacs-lisp
+  (req-package org
+    :config (progn
+              (setq org-odd-levels-only t)
+              (setq org-hide-leading-stars t)
+              (setq org-src-fontify-natively t)))
+#+END_SRC
+
+*** Built-in: dired
+***** Main package
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package dired
+    :config (progn
+              (put 'dired-find-alternate-file 'disabled nil)))
+#+END_SRC
+
+***** Extensions
+
+#+BEGIN_SRC emacs-lisp
+  (req-package wdired
+    :require (dired)
+    :config (progn
+              (setq wdired-allow-to-change-permissions t)))
+#+END_SRC
+
+*** Built-in: ediff
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ediff
+    :config (progn
+              (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+              (setq ediff-split-window-function 'split-window-horizontally)))
+#+END_SRC
+
+*** Third-party
+
+#+BEGIN_SRC emacs-lisp
+  (req-package cmake-mode
+    :mode (("CMakeLists\\.txt\\'" . cmake-mode)
+           ("\\.cmake\\'" . cmake-mode)))
+
+  (req-package dummy-h-mode
+    :mode "\\.h$"
+    :config (progn
+              (setq dummy-h-mode-default-major-mode 'c++-mode)))
+
+  (req-package git-commit-mode)
+  (req-package git-rebase-mode)
+  (req-package gitattributes-mode)
+  (req-package gitconfig-mode)
+  (req-package gitignore-mode)
+
+  (req-package lua-mode
+    :mode "\\.lua$"
+    :interpreter "lua")
+
+  (req-package markdown-mode
+    :mode (("\\.text\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode)
+           ("\\.md\\'" . markdown-mode)))
+
+  (req-package muttrc-mode
+    :mode "[Mm]uttrc\\'")
+
+  (req-package pkgbuild-mode
+    :mode "/PKGBUILD$")
+#+END_SRC
+
+* Completion in minibuffer
+*** Built-in
+
+#+BEGIN_SRC emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+*** Built-in: ido
+***** Main package
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ido :disabled t
+    :config (progn
+              (ido-mode 1)
+              (ido-everywhere 1)))
+#+END_SRC
+
+***** Extensions
+
+#+BEGIN_SRC emacs-lisp
+  (req-package smex
+    :require (ido)
+    :config (smex-initialize))
+#+END_SRC
+
+*** Built-in: icomplete
+
+#+BEGIN_SRC emacs-lisp
+  (use-package icomplete
+    :config (icomplete-mode 1))
+#+END_SRC
+
+*** Helm
+* Auto parentheses
+*** Built-in: electric
+   
+#+BEGIN_SRC emacs-lisp
+  (use-package elec-pair
+    :config (electric-pair-mode 1))
+#+END_SRC
+
+*** Autopair
+
+#+BEGIN_SRC emacs-lisp
+  (req-package autopair :disabled t
+    :config (autopair-global-mode 1))
+#+END_SRC
+
+*** Smartparens
+
+#+BEGIN_SRC emacs-lisp
+  (req-package smartparens-config :disabled t
+    :ensure smartparens
+    :config (progn
+              (smartparens-global-mode 1)
+              (defun my-put-newline-in-braces (&rest ignore)
+                (newline)
+                (indent-according-to-mode)
+                (forward-line -1)
+                (indent-according-to-mode))
+              (sp-local-pair 'c-mode "{" nil :post-handlers '((my-put-newline-in-braces "RET")))
+              (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-put-newline-in-braces "RET")))))
+#+END_SRC
+
+* Code semantic engines
+*** Built-in: CEDET
+
+#+BEGIN_SRC emacs-lisp
+  (req-package cedet
+    :config (progn
+              (load-file (expand-file-name "cedet-config.el" (expand-file-name "init.d" user-emacs-directory)))
+              (load-file (expand-file-name "cedet-custom.el" (expand-file-name "init.d" user-emacs-directory)))))
+#+END_SRC
+
+*** ycmd
+   
+#+BEGIN_SRC emacs-lisp
+  (req-package ycmd :disabled t
+    :config (ycmd-setup))
+#+END_SRC
+
+*** Irony
+
+#+BEGIN_SRC emacs-lisp
+  (req-package irony
+    :commands (irony-mode)
+    :init (progn
+            (add-hook 'c-mode-hook 'irony-mode)
+            (add-hook 'c++-mode-hook 'irony-mode)
+            (add-hook 'objc-mode-hook 'irony-mode))
+    :config (progn
+              (setq w32-pipe-read-delay 0) ;; NOTE: this improves performance on Windows
+              (setq-mode-local c++-mode irony-additional-clang-options '("-std=c++11"))
+              (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+              (defun my-set-irony-mode-keys ()
+                (define-key irony-mode-map [remap completion-at-point]
+                  'irony-completion-at-point-async)
+                (define-key irony-mode-map [remap complete-symbol]
+                  'irony-completion-at-point-async))
+              (add-hook 'irony-mode-hook 'my-set-irony-mode-keys)))
+#+END_SRC
+   
+* Pop-up completion at point
+*** Auto-complete
+***** Main package
+
+#+BEGIN_SRC emacs-lisp
+  (req-package auto-complete :disabled t
+    :config (ac-config-default))
+#+END_SRC
+
+***** Extensions
+*** Company
+***** Main package
+
+#+BEGIN_SRC emacs-lisp
+  (req-package company
+    :config (global-company-mode 1))
+#+END_SRC
+
+***** Extensions: ycmd
+
+#+BEGIN_SRC emacs-lisp
+  (req-package company-ycmd
+    :require (company ycmd)
+    :config (company-ycmd-setup))
+#+END_SRC
+
+***** Extensions: Irony
+
+#+BEGIN_SRC emacs-lisp
+  (req-package company-irony
+    :require (company irony yasnippet)
+    :config (progn            
+              (add-to-list 'company-backends 'company-irony)
+              (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)))
+#+END_SRC
+
+* Echo area prompt at point
+*** Built-in: ElDoc
+***** Main package
+
+#+BEGIN_SRC emacs-lisp
+  (use-package eldoc
+    :config (global-eldoc-mode 1))
+#+END_SRC
+
+***** Extensions
+
+#+BEGIN_SRC emacs-lisp
+  (req-package c-eldoc :disabled t
+    :require (eldoc)
+    :commands (c-turn-on-eldoc-mode)
+    :init (add-hook 'c-mode-hook 'c-turn-on-eldoc-mode))
+#+END_SRC
+
+***** Extensions: Irony
+
+#+BEGIN_SRC emacs-lisp
+  (req-package irony-eldoc
+    :require (eldoc irony)
+    :commands (irony-eldoc)
+    :init (add-hook 'irony-mode-hook 'irony-eldoc))
+#+END_SRC
+
+* Text objects highlight
+*** Built-in
+
+#+BEGIN_SRC emacs-lisp
+  (use-package paren
+    :config (show-paren-mode 1))
+#+END_SRC
+
+*** Third-party
+
+#+BEGIN_SRC emacs-lisp
+  (req-package rainbow-mode
+    :commands (rainbow-mode))
+#+END_SRC
+
+* Code syntax highlight
+*** Built-in: font-lock
+***** Main package
+
+#+BEGIN_SRC emacs-lisp
+  (use-package font-core
+    :config (global-font-lock-mode 1))
+#+END_SRC
+
+***** Extensions
+
+#+BEGIN_SRC emacs-lisp
+  (req-package cmake-font-lock
+    :commands (cmake-font-lock-activate)
+    :init (progn
+            (defun my-add-cmake-font-lock ()
+              (if (eq major-mode 'cmake-mode)
+                  (cmake-font-lock-activate)))
+            (add-hook 'font-lock-mode-hook 'my-add-cmake-font-lock)))
+
+  (use-package doxymacs
+    :commands (doxymacs-mode doxymacs-font-lock)
+    :init (progn
+            (add-hook 'c-mode-common-hook 'doxymacs-mode)
+            (defun my-add-doxymacs-font-lock ()
+              (if (or (eq major-mode 'c-mode)
+                      (eq major-mode 'c++-mode))
+                  (doxymacs-font-lock)))
+            (add-hook 'font-lock-mode-hook 'my-add-doxymacs-font-lock)))
+
+  (load-file (expand-file-name "init.d/font-lock-config.el" user-emacs-directory))
+#+END_SRC
+
+* Text spelling check
+*** Built-in: Flyspell
+***** Main package
+***** Extensions
+* Code syntax check
+*** Built-in: Flymake
+***** Main package
+
+#+BEGIN_SRC emacs-lisp
+  (use-package flymake :disabled t
+    :commands (flymake-find-file-hook)
+    :init (add-hook 'find-file-hook 'flymake-find-file-hook)
+    :config (progn
+              (add-to-list 'flymake-allowed-file-name-masks '("\\.[fF]\\(?:90\\|95\\|03\\|08\\)?\\'" flymake-simple-make-init))
+              (add-to-list 'flymake-allowed-file-name-masks '("\\.f\\(?:or\\|pp\\|tn\\)\\'" flymake-simple-make-init))
+              (add-to-list 'flymake-allowed-file-name-masks '("\\.F\\(?:OR\\|PP\\|TN\\)\\'" flymake-simple-make-init))))
+#+END_SRC
+
+***** Extensions
+
+#+BEGIN_SRC emacs-lisp
+  (req-package flymake-lua
+    :require (flymake lua-mode)
+    :commands (flymake-lua-load)
+    :init (add-hook 'lua-mode-hook 'flymake-lua-load))
+
+  (req-package flymake-shell
+    :require (flymake)
+    :commands (flymake-shell-load)
+    :init (add-hook 'sh-set-shell-hook 'flymake-shell-load))
+#+END_SRC
+
+*** Flycheck
+***** Main package
+
+#+BEGIN_SRC emacs-lisp
+  (req-package flycheck
+    :config (progn
+              (global-flycheck-mode 1)
+              (setq-mode-local c++-mode flycheck-clang-language-standard "c++11")))
+#+END_SRC
+
+***** Extensions: ycmd
+
+#+BEGIN_SRC emacs-lisp
+  (req-package flycheck-ycmd
+    :require (flycheck ycmd)
+    :config (flycheck-ycmd-setup))
+#+END_SRC
+
+***** Extensions: Irony
+
+#+BEGIN_SRC emacs-lisp
+  (req-package flycheck-irony
+    :require (flycheck irony)
+    :config (add-to-list 'flycheck-checkers 'irony))
+#+END_SRC
+
+* Misc editing goodies
+*** Built-in
+
+#+BEGIN_SRC emacs-lisp
+  (use-package winner
+    :config (winner-mode 1))
+
+  ;; scrolling
+  (setq scroll-preserve-screen-position t)
+#+END_SRC
+
+* Misc coding goodies
+*** Built-in
+
+#+BEGIN_SRC emacs-lisp
+  (use-package subword
+    :config (global-subword-mode 1)
+    :diminish subword-mode)
+#+END_SRC
+
+*** Third-party
+
+#+BEGIN_SRC emacs-lisp
+  (req-package google-c-style
+    :commands (google-set-c-style google-make-newline-indent)
+    :init (progn
+            (add-hook 'c-mode-common-hook 'google-set-c-style)
+            (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
+
+  (req-package indent-guide
+    :idle (indent-guide-global-mode 1) ;; BUG: init crashes Emacs daemon
+    :config (progn
+              (setq indent-guide-inhibit-modes
+                    (append '(package-menu-mode Info-mode Man-mode)
+                            indent-guide-inhibit-modes)))
+    :diminish indent-guide-mode)
+
+  (req-package yasnippet
+    :config (yas-global-mode 1) :demand t
+    :mode ("/snippets/" . snippet-mode))
+#+END_SRC
+
