@@ -7,15 +7,13 @@
 (message "Loading M4E5TR0's GNU Emacs config...")
 
 (setq user-full-name "Pavel Matcula")
-;; (setq user-mail-address nil) ; NOTE: anti-spam -> personal
+(let ((dot ".") (at "@") (google-mail "gmail.com"))
+  (setq user-mail-address (concat "dev" dot "plvlml" at google-mail)))
 
 (defvar user-theme 'zenburn-care)
-(defvar user-theme-load-path nil) ; NOTE: platform-specific -> personal
-(defvar custom-cedet-directory nil) ; NOTE: platform-specific -> personal
-
-(defun my-load-personal-file (file)
-  (load (expand-file-name file (expand-file-name "personal" user-emacs-directory)) :noerror))
-(my-load-personal-file "config.el")
+(defvar user-theme-load-path "~/1-linux/themes/zenburn-care")
+(defvar custom-cedet-directory nil) ;; "~/0-linux/builds/cedet-git")
+(defvar custom-reveal.js-root "file:///home/m4e5tr0/0-linux/scripts/reveal.js-git")
 
 (when custom-cedet-directory
   (setq max-specpdl-size 2600)
@@ -28,6 +26,18 @@
 ;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") :append)
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") :append)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") :append)
+(package-initialize :no-activate)
+
+(unless (package-installed-p 'org-plus-contrib)
+  (message "Installing org-plus-contrib...")
+  (package-install 'org-plus-contrib)
+  (message "Installing org-plus-contrib... DONE."))
+
+(unless (package-installed-p 'req-package)
+  (message "Installing req-package...")
+  (package-install 'req-package)
+  (message "Installing req-package... DONE."))
+
 (message "Initializing packages...")
 (package-initialize)
 (message "Initializing packages... DONE.")
@@ -38,14 +48,10 @@
     (add-to-list 'custom-theme-load-path user-theme-load-path))
   (load-theme user-theme :no-confirm))
 
-(unless (package-installed-p 'req-package)
-  (message "Installing req-package...")
-  (package-install 'req-package)
-  (message "Installing req-package... DONE."))
-(require 'req-package)
+(load-file (expand-file-name "org-config.el" (expand-file-name "init.d" user-emacs-directory)))
+(require 'org)
 
-(use-package org-install
-  :ensure org-plus-contrib)
+(require 'req-package)
 (org-babel-load-file (expand-file-name "init-config.org" user-emacs-directory))
 (message "Requiring packages...")
 (req-package-finish)

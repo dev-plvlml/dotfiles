@@ -533,4 +533,8 @@ client.connect_signal("unfocus", function(c)
       c.opacity = 0.8
 end)
 
+client.connect_signal("property::fullscreen", function(c)
+      c.opacity = 1.0
+end)
+
 -- }}}

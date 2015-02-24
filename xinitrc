@@ -43,7 +43,7 @@ urxvtd -q -f -o
 
 ## Emacs daemon
 emacs --daemon
-emacsclient -e "(my-daemon-workaround)"
+export EDITOR=emacsclient
 
 ## Composite manager
 unagi &
