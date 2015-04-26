@@ -12,8 +12,8 @@
 
 (defvar user-theme 'zenburn-care)
 (defvar user-theme-load-path "~/1-linux/themes/zenburn-care")
-(defvar custom-cedet-directory nil) ;; "~/0-linux/builds/cedet-git")
-(defvar custom-reveal.js-root "file:///home/m4e5tr0/0-linux/scripts/reveal.js-git")
+(defvar custom-cedet-directory nil) ;; "~/0-linux/builds/cedet.git")
+(defvar custom-reveal.js-root "file:///home/m4e5tr0/0-linux/scripts/reveal-js.git")
 
 (when custom-cedet-directory
   (setq max-specpdl-size 2600)
@@ -43,13 +43,13 @@
 (message "Initializing packages... DONE.")
 (setq package-enable-at-startup nil)
 
+(when user-theme-load-path
+  (add-to-list 'custom-theme-load-path user-theme-load-path))
 (when user-theme
-  (when user-theme-load-path
-    (add-to-list 'custom-theme-load-path user-theme-load-path))
   (load-theme user-theme :no-confirm))
 
-(load-file (expand-file-name "org-config.el" (expand-file-name "init.d" user-emacs-directory)))
 (require 'org)
+(load-file (expand-file-name "org-config.el" (expand-file-name "init.d" user-emacs-directory)))
 
 (require 'req-package)
 (org-babel-load-file (expand-file-name "init-config.org" user-emacs-directory))

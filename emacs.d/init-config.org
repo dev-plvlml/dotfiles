@@ -2,62 +2,62 @@
 #+AUTHOR: Pavel 'M4E5TR0' Matcula
 #+STARTUP: odd
 
+* Frame visual appearance
+
 #+BEGIN_SRC emacs-lisp
-  (defun my-load-personal-file (file)
-    (load (expand-file-name file (expand-file-name "personal" user-emacs-directory)) :noerror))
+(message "Loading frame visual appearance config...")
 #+END_SRC
 
-* Frame visual appearance
 *** Built-in
 ***** Main packages
 
 #+BEGIN_SRC emacs-lisp
-  (use-package menu-bar
+  (req-package menu-bar
     :config (menu-bar-mode -1))
 
-  (use-package tool-bar
+  (req-package tool-bar
     :config (tool-bar-mode -1))
 
-  (use-package scroll-bar
-    :config (progn
-              (if x-toolkit-scroll-bars
-                  (scroll-bar-mode -1)
-                (scroll-bar-mode 1)
-                (set-scroll-bar-mode 'right))))
+  (req-package scroll-bar
+    :config (if x-toolkit-scroll-bars
+                (scroll-bar-mode -1)
+              (scroll-bar-mode 1))
+    (set-scroll-bar-mode 'right))
 
-  (use-package linum
-    :idle (global-linum-mode 1)) ; BUG: init crashes Emacs daemon
+  (req-package linum
+    :defer 1 ; BUGFIX: for Emacs daemon
+    :config (global-linum-mode 1))
 
-  (use-package tooltip
-    :config (progn
-              (tooltip-mode 1)
-              (setq x-gtk-use-system-tooltips nil)))
+  (req-package tooltip
+    :config (tooltip-mode 1))
+    ;; (setq x-gtk-use-system-tooltips nil)) ; FIXME
 
   ;; modeline
   (column-number-mode 1)
 
   ;; cursor
   (setq-default cursor-type 'bar)
-  (setq-default cursor-in-non-selected-windows nil)
-
   (add-hook 'overwrite-mode-hook
             '(lambda ()
                (if overwrite-mode
                    (setq cursor-type 'box)
                  (setq cursor-type 'bar))))
+  (setq-default cursor-in-non-selected-windows nil)
 
-  (setq blink-cursor-delay 60) ; NOTE: order matters
-  (setq blink-cursor-blinks 0) ; NOTE: order matters
-  (blink-cursor-mode 1)        ; NOTE: order matters
+  (setq blink-cursor-delay 60)
+  (setq blink-cursor-blinks 0)
+  (blink-cursor-mode 1) ; NOTE: order matters
 
-  (use-package hl-line
-    :idle (global-hl-line-mode 1) ; BUG: init crashes Emacs daemon
-    :config (progn
-              (defun my-hl-line-mode-off ()
-                (interactive)
-                (make-local-variable 'global-hl-line-mode)
-                (setq global-hl-line-mode nil))
-              (add-hook 'diff-mode-hook 'my-hl-line-mode-off)))
+  (req-package hl-line
+    :config (global-hl-line-mode 1)
+    (defun my-turn-off-hl-line-mode ()
+      (interactive)
+      (make-local-variable 'global-hl-line-mode)
+      (setq global-hl-line-mode nil))
+    (add-hook 'diff-mode-hook 'my-turn-off-hl-line-mode))
+
+  (setq-default fill-column 132)
+  (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 #+END_SRC
 
 ***** Extensions
@@ -65,136 +65,200 @@
 #+BEGIN_SRC emacs-lisp
   (req-package hlinum
     :require (linum)
+    :defer t
     :commands (hlinum-activate)
-    :init (add-hook 'linum-mode-hook 'hlinum-activate))
+    :init
+    (add-hook 'linum-mode-hook 'hlinum-activate))
+
+  (req-package visual-fill-column
+    :defer t
+    :commands (turn-on-visual-fill-column-mode)
+    :init
+    (add-hook 'visual-line-mode-hook 'turn-on-visual-fill-column-mode)
+    :config
+    (setq-default visual-fill-column-fringes-outside-margins nil))
 #+END_SRC
 
 *** Third-party
 
 #+BEGIN_SRC emacs-lisp
   (req-package tabbar
-    :config (progn
-              (tabbar-mode 1)
-              (setq tabbar-use-images nil)
-              (custom-set-variables ; FIXME
-               '(tabbar-scroll-left-button
-                 '((" <") " ="))
-               '(tabbar-scroll-right-button
-                 '(("> ") "= ")))
-              (defun my-get-tabbar-tab-label (tab)
-                (concat " " (tabbar-buffer-tab-label tab) " "))
-              (setq tabbar-tab-label-function 'my-get-tabbar-tab-label)))
+    :demand t
+    :config (tabbar-mode 1)
+    (setq tabbar-use-images nil)
+    (setq tabbar-scroll-left-button '((" <") " ="))
+    (setq tabbar-scroll-right-button '(("> ") "= "))
+    (defun my-get-tabbar-tab-label (tab)
+      (concat " " (tabbar-buffer-tab-label tab) " "))
+    (setq tabbar-tab-label-function 'my-get-tabbar-tab-label))
 #+END_SRC
 
 * Major working modes
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading major working modes config...")
+#+END_SRC
+
 *** Built-in
 ***** Main packages
 
 #+BEGIN_SRC emacs-lisp
-  (use-package fortran
-    :config (progn
-              (add-to-list 'auto-mode-alist '("\\.[fF]\\(?:90\\|95\\|03\\|08\\)\\'" . fortran-mode))
-              (add-to-list 'auto-mode-alist '("\\.f\\(?:or\\|pp\\|tn\\|i\\)\\'" . fortran-mode))
-              (add-to-list 'auto-mode-alist '("\\.F\\(?:OR\\|PP\\|TN\\)\\'" . fortran-mode))))
+  (req-package fortran
+    :defer t
+    :mode (("\\.[fF]\\(?:90\\|95\\|03\\|08\\)\\'" . f90-mode)
+           ("\\.f\\(?:or\\|pp\\|tn\\|i\\)\\'" . fortran-mode)
+           ("\\.F\\(?:OR\\|PP\\|TN\\)\\'" . fortran-mode)))
 #+END_SRC
 
 ***** Extensions
 
 #+BEGIN_SRC emacs-lisp
   (req-package paradox
-    :require (package async)
-    :config (progn
-              (my-load-personal-file "paradox-config")
-              (setq paradox-automatically-star nil)))
+    :require (async)
+    :defer t
+    :commands (paradox-list-packages
+               paradox-upgrade-packages)
+    :config
+    (setq paradox-automatically-star nil)
+    (load (expand-file-name "paradox-config.el"
+                            (expand-file-name "personal"
+                                              user-emacs-directory)) :noerror))
 #+END_SRC
 
 *** Built-in: org-mode
 ***** Main package
 
 #+BEGIN_SRC emacs-lisp
-  (use-package org
+  (req-package org
     :ensure org-plus-contrib
-    :config (progn
-              (setq org-odd-levels-only t)
-              (setq org-hide-leading-stars t)
-              (setq org-src-fontify-natively t)))
+    :defer t
+    :mode ("\\.org\\'" . org-mode)
+    :config
+    (setq org-odd-levels-only t)
+    (setq org-hide-leading-stars t)
+    (setq org-src-fontify-natively t)
+    (setq org-html-htmlize-output-type 'css)
+    (add-to-list 'org-babel-load-languages '(C . t)))
 #+END_SRC
 
 ***** Extensions
 
 #+BEGIN_SRC emacs-lisp
   (req-package org-tree-slide
-    :require (org)
+    :defer t
     :commands (org-tree-slide-mode))
 
   (req-package ox-reveal
-    :require (org htmlize)
-    :config (progn
-              (setq org-reveal-root custom-reveal.js-root)))
+    :require (htmlize)
+    :defer t
+    :commands (org-reveal-export-to-html
+               org-reveal-export-to-html-and-browse)
+    :config
+    (setq org-reveal-root custom-reveal.js-root))
+
+  (req-package htmlize
+    :defer t
+    :commands (htmlize-region htmlize-buffer htmlize-file
+               htmlize-many-files htmlize-many-files-dired)
+    :config
+    (setq htmlize-ignore-face-size t)) ; TESTME
 #+END_SRC
 
 *** Built-in: dired
 ***** Main package
 
 #+BEGIN_SRC emacs-lisp
-  (use-package dired
-    :config (progn
-              (put 'dired-find-alternate-file 'disabled nil))) ; TESTME
+  (req-package dired
+    :config
+    (put 'dired-find-alternate-file 'disabled nil)) ; TESTME
 #+END_SRC
 
 ***** Extensions
 
 #+BEGIN_SRC emacs-lisp
   (req-package wdired
-    :require (dired)
-    :config (progn
-              (setq wdired-allow-to-change-permissions t)))
+    :defer t
+    :commands (wdired-change-to-wdired-mode)
+    :config
+    (setq wdired-allow-to-change-permissions t))
 #+END_SRC
 
 *** Built-in: ediff
 
 #+BEGIN_SRC emacs-lisp
-  (use-package ediff
-    :config (progn
-              (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-              (setq ediff-split-window-function 'split-window-horizontally)))
+  (req-package ediff
+    :config
+    (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+    (setq ediff-split-window-function 'split-window-horizontally))
 #+END_SRC
 
 *** Third-party
 
 #+BEGIN_SRC emacs-lisp
   (req-package cmake-mode
+    :defer t
     :mode (("CMakeLists\\.txt\\'" . cmake-mode)
            ("\\.cmake\\'" . cmake-mode)))
 
   (req-package dummy-h-mode
+    :defer t
     :mode "\\.h$"
-    :config (progn
-              (setq dummy-h-mode-default-major-mode 'c++-mode)))
+    :config
+    (setq dummy-h-mode-default-major-mode 'c++-mode))
 
-  (req-package git-commit-mode)
-  (req-package git-rebase-mode)
-  (req-package gitattributes-mode)
-  (req-package gitconfig-mode)
-  (req-package gitignore-mode)
+  (req-package git-commit-mode
+    :defer t
+    :mode (("/COMMIT_EDITMSG\\'" . git-commit-mode)
+           ("/MERGE_MSG\\'" . git-commit-mode)))
+
+  (req-package git-rebase-mode
+    :defer t
+    :mode ("/git-rebase-todo\\'" . git-rebase-mode))
+
+  (req-package gitattributes-mode
+    :defer t
+    :mode (("/git/attributes\\'" . gitattributes-mode)
+           ("/\\.git/info/attributes\\'" . gitattributes-mode)
+           ("/\\.gitattributes\\'" . gitattributes-mode)))
+
+  (req-package gitconfig-mode
+    :defer t
+    :mode (("/git/config\\'" . gitconfig-mode)
+           ("/\\.git/config\\'" . gitconfig-mode)
+           ("/\\.gitconfig\\'" . gitconfig-mode)))
+
+  (req-package gitignore-mode
+    :defer t
+    :mode (("/git/ignore\\'" . gitignore-mode)
+           ("/\\.git/info/exclude\\'" . gitignore-mode)
+           ("/\\.gitignore\\'" . gitignore-mode)))
 
   (req-package lua-mode
+    :defer t
     :mode "\\.lua$"
     :interpreter "lua")
 
   (req-package markdown-mode
+    :defer t
     :mode (("\\.text\\'" . markdown-mode)
            ("\\.markdown\\'" . markdown-mode)
            ("\\.md\\'" . markdown-mode)))
 
   (req-package muttrc-mode
+    :defer t
     :mode "[Mm]uttrc\\'")
 
   (req-package pkgbuild-mode
+    :defer t
     :mode "/PKGBUILD$")
 #+END_SRC
 
 * Completion in minibuffer
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading completion in minibuffer config...")
+#+END_SRC
+
 *** Built-in
 
 #+BEGIN_SRC emacs-lisp
@@ -205,10 +269,10 @@
 ***** Main package
 
 #+BEGIN_SRC emacs-lisp
-  (use-package ido :disabled t
-    :config (progn
-              (ido-mode 1)
-              (ido-everywhere 1)))
+  (req-package ido :disabled t
+    :demand t
+    :config (ido-mode 1)
+    (ido-everywhere 1))
 #+END_SRC
 
 ***** Extensions
@@ -216,22 +280,35 @@
 #+BEGIN_SRC emacs-lisp
   (req-package smex
     :require (ido)
+    :demand t
     :config (smex-initialize))
+
+  (req-package ido-ubiquitous
+    :require (ido)
+    :demand t
+    :config (ido-ubiquitous-mode 1))
 #+END_SRC
 
 *** Built-in: icomplete
 
 #+BEGIN_SRC emacs-lisp
-  (use-package icomplete
+  (req-package icomplete
+    :demand t
     :config (icomplete-mode 1))
 #+END_SRC
 
 *** TODO Helm
 * Auto parentheses
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading auto parentheses config...")
+#+END_SRC
+
 *** Built-in: electric
    
 #+BEGIN_SRC emacs-lisp
-  (use-package elec-pair
+  (req-package elec-pair
+    :demand t
     :config (electric-pair-mode 1))
 #+END_SRC
 
@@ -239,6 +316,7 @@
 
 #+BEGIN_SRC emacs-lisp
   (req-package autopair :disabled t
+    :demand t
     :config (autopair-global-mode 1))
 #+END_SRC
 
@@ -247,31 +325,36 @@
 #+BEGIN_SRC emacs-lisp
   (req-package smartparens-config :disabled t
     :ensure smartparens
-    :config (progn
-              (smartparens-global-mode 1)
-              (defun my-put-newline-in-braces (&rest ignore)
-                (newline)
-                (indent-according-to-mode)
-                (forward-line -1)
-                (indent-according-to-mode))
-              (sp-local-pair 'c-mode "{" nil :post-handlers '((my-put-newline-in-braces "RET")))
-              (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-put-newline-in-braces "RET")))))
+    :demand t
+    :config (smartparens-global-mode 1)
+    (defun my-put-newline-in-braces (&rest ignore)
+      (newline)
+      (indent-according-to-mode)
+      (forward-line -1)
+      (indent-according-to-mode))
+    (sp-local-pair 'c-mode "{" nil :post-handlers '((my-put-newline-in-braces "RET")))
+    (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-put-newline-in-braces "RET"))))
 #+END_SRC
 
 * Code semantic engines
 *** Built-in: CEDET
 
 #+BEGIN_SRC emacs-lisp
-  (req-package cedet
-    :config (progn
-              (load-file (expand-file-name "cedet-config.el" (expand-file-name "init.d" user-emacs-directory)))
-              (load-file (expand-file-name "cedet-custom.el" (expand-file-name "init.d" user-emacs-directory)))))
+  (req-package cedet :disabled t
+    :config
+    (load-file (expand-file-name "cedet-config.el"
+                                 (expand-file-name "init.d"
+                                                   user-emacs-directory)))
+    (load-file (expand-file-name "cedet-custom.el"
+                                 (expand-file-name "init.d"
+                                                   user-emacs-directory))))
 #+END_SRC
 
 *** ycmd
    
 #+BEGIN_SRC emacs-lisp
   (req-package ycmd :disabled t
+    :demand t
     :config (ycmd-setup))
 #+END_SRC
 
@@ -279,29 +362,37 @@
 
 #+BEGIN_SRC emacs-lisp
   (req-package irony
+    :defer t
     :commands (irony-mode)
-    :init (progn
-            (add-hook 'c-mode-hook 'irony-mode)
-            (add-hook 'c++-mode-hook 'irony-mode)
-            (add-hook 'objc-mode-hook 'irony-mode))
-    :config (progn
-              (setq w32-pipe-read-delay 0)
-              ;; (setq-mode-local c++-mode irony-additional-clang-options '("-std=c++11"))
-              (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-              (defun my-set-irony-mode-keys ()
-                (define-key irony-mode-map [remap completion-at-point]
-                  'irony-completion-at-point-async)
-                (define-key irony-mode-map [remap complete-symbol]
-                  'irony-completion-at-point-async))
-              (add-hook 'irony-mode-hook 'my-set-irony-mode-keys)))
+    :init
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'objc-mode-hook 'irony-mode)
+    :config
+    (setq w32-pipe-read-delay 0)
+    ;; (setq-mode-local c++-mode irony-additional-clang-options '("-std=c++11"))
+    ;; (setq irony-additional-clang-options '("-std=c++11")) ; TODO
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+    (defun my-set-irony-mode-keys ()
+      (define-key irony-mode-map [remap completion-at-point]
+        'irony-completion-at-point-async)
+      (define-key irony-mode-map [remap complete-symbol]
+        'irony-completion-at-point-async))
+    (add-hook 'irony-mode-hook 'my-set-irony-mode-keys))
 #+END_SRC
    
 * Pop-up completion at point
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading pop-up completion at point config...")
+#+END_SRC
+
 *** TODO Auto-complete
 ***** Main package
 
 #+BEGIN_SRC emacs-lisp
   (req-package auto-complete :disabled t
+    :demand t
     :config (ac-config-default))
 #+END_SRC
 
@@ -311,6 +402,7 @@
 
 #+BEGIN_SRC emacs-lisp
   (req-package company
+    :demand t
     :config (global-company-mode 1))
 #+END_SRC
 
@@ -319,6 +411,7 @@
 #+BEGIN_SRC emacs-lisp
   (req-package company-quickhelp :disabled t
     :require (company)
+    :demand t
     :config (company-quickhelp-mode 1))
 #+END_SRC
 
@@ -327,6 +420,7 @@
 #+BEGIN_SRC emacs-lisp
   (req-package company-ycmd
     :require (company ycmd)
+    :demand t
     :config (company-ycmd-setup))
 #+END_SRC
 
@@ -335,17 +429,23 @@
 #+BEGIN_SRC emacs-lisp
   (req-package company-irony
     :require (company irony yasnippet)
-    :config (progn            
-              (add-to-list 'company-backends 'company-irony)
-              (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)))
+    :demand t
+    :config (add-to-list 'company-backends 'company-irony)
+    (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
 #+END_SRC
 
 * Echo area prompt at point
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading echo area prompt at point config...")
+#+END_SRC
+
 *** Built-in: ElDoc
 ***** Main package
 
 #+BEGIN_SRC emacs-lisp
-  (use-package eldoc
+  (req-package eldoc
+    :demand t
     :config (global-eldoc-mode 1))
 #+END_SRC
 
@@ -353,7 +453,7 @@
 
 #+BEGIN_SRC emacs-lisp
   (req-package c-eldoc :disabled t
-    :require (eldoc)
+    :defer t
     :commands (c-turn-on-eldoc-mode)
     :init (add-hook 'c-mode-hook 'c-turn-on-eldoc-mode))
 #+END_SRC
@@ -362,16 +462,23 @@
 
 #+BEGIN_SRC emacs-lisp
   (req-package irony-eldoc
-    :require (eldoc irony)
+    :require (irony)
+    :defer t
     :commands (irony-eldoc)
     :init (add-hook 'irony-mode-hook 'irony-eldoc))
 #+END_SRC
 
 * Text objects highlight
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading text objects highlight config...")
+#+END_SRC
+
 *** Built-in
 
 #+BEGIN_SRC emacs-lisp
-  (use-package paren
+  (req-package paren
+    :demand t
     :config (show-paren-mode 1))
 #+END_SRC
 
@@ -379,71 +486,109 @@
 
 #+BEGIN_SRC emacs-lisp
   (req-package rainbow-mode
+    :defer t
     :commands (rainbow-mode))
+
+  (req-package highlight-escape-sequences
+    :demand t
+    :config
+    (add-to-list 'hes-simple-modes 'c-mode)
+    (add-to-list 'hes-simple-modes 'c++-mode)
+    (add-to-list 'hes-simple-modes 'objc-mode)
+    (hes-mode 1)) ; NOTE: order matters
+
+  (req-package paren-face
+    :defer t
+    :commands (turn-on-paren-face-mode-if-desired)
+    :init
+    (add-hook 'prog-mode-hook 'turn-on-paren-face-mode-if-desired))
 #+END_SRC
 
 * Code syntax highlight
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading code syntax highlight config...")
+#+END_SRC
+
 *** Built-in: font-lock
 ***** Main package
 
 #+BEGIN_SRC emacs-lisp
-  (use-package font-core
-    :config (global-font-lock-mode 1))
-
-  (load-file (expand-file-name "font-lock-config.el" (expand-file-name "init.d" user-emacs-directory)))
+  (req-package font-core
+    :demand t
+    :config (global-font-lock-mode 1)
+    (load-file (expand-file-name "font-lock-config.el"
+                                 (expand-file-name "init.d"
+                                                   user-emacs-directory))))
 #+END_SRC
 
 ***** Extensions
 
 #+BEGIN_SRC emacs-lisp
   (req-package cmake-font-lock
-    :require (font-core)
+    :defer t
     :commands (cmake-font-lock-activate)
-    :init (progn
-            (add-hook 'cmake-mode-hook 'cmake-font-lock-activate)))
+    :init
+    (add-hook 'cmake-mode-hook 'cmake-font-lock-activate))
 
   (req-package doxymacs
-    :require (font-core)
+    :defer t
     :commands (doxymacs-mode doxymacs-font-lock)
-    :init (progn
-            (add-hook 'c-mode-common-hook 'doxymacs-mode)
-            (defun my-add-doxymacs-font-lock ()
-              (if (or (eq major-mode 'c-mode)
-                      (eq major-mode 'c++-mode))
-                  (doxymacs-font-lock)))
-            (add-hook 'font-lock-mode-hook 'my-add-doxymacs-font-lock)))
+    :init
+    (add-hook 'c-mode-common-hook 'doxymacs-mode)
+    (defun my-add-doxymacs-font-lock ()
+      (if (or (eq major-mode 'c-mode)
+              (eq major-mode 'c++-mode))
+          (doxymacs-font-lock)))
+    (add-hook 'font-lock-mode-hook 'my-add-doxymacs-font-lock))
 #+END_SRC
 
 * Text spelling check
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading text spelling check config...")
+#+END_SRC
+
 *** TODO Built-in: Flyspell
 ***** Main package
 ***** Extensions
 * Code syntax check
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading code syntax check config...")
+#+END_SRC
+
 *** Built-in: Flymake
 ***** Main package
 
 #+BEGIN_SRC emacs-lisp
-  (use-package flymake :disabled t
+  (req-package flymake :disabled t
+    :defer t
     :commands (flymake-find-file-hook)
-    :init (add-hook 'find-file-hook 'flymake-find-file-hook)
-    :config (progn
-              (add-to-list 'flymake-allowed-file-name-masks '("\\.[fF]\\(?:90\\|95\\|03\\|08\\)?\\'" flymake-simple-make-init)) ; XXX
-              (add-to-list 'flymake-allowed-file-name-masks '("\\.f\\(?:or\\|pp\\|tn\\)\\'" flymake-simple-make-init)) ; XXX
-              (add-to-list 'flymake-allowed-file-name-masks '("\\.F\\(?:OR\\|PP\\|TN\\)\\'" flymake-simple-make-init)))) ; XXX
+    :init
+    (add-hook 'find-file-hook 'flymake-find-file-hook)
+    :config
+    (add-to-list 'flymake-allowed-file-name-masks '("\\.[fF]\\(?:90\\|95\\|03\\|08\\)?\\'" flymake-simple-make-init)) ; XXX
+    (add-to-list 'flymake-allowed-file-name-masks '("\\.f\\(?:or\\|pp\\|tn\\)\\'" flymake-simple-make-init)) ; XXX
+    (add-to-list 'flymake-allowed-file-name-masks '("\\.F\\(?:OR\\|PP\\|TN\\)\\'" flymake-simple-make-init))) ; XXX
 #+END_SRC
 
 ***** Extensions
 
 #+BEGIN_SRC emacs-lisp
   (req-package flymake-lua
-    :require (flymake lua-mode)
+    :require (flymake)
+    :defer t
     :commands (flymake-lua-load)
-    :init (add-hook 'lua-mode-hook 'flymake-lua-load))
+    :init
+    (add-hook 'lua-mode-hook 'flymake-lua-load))
 
   (req-package flymake-shell
-    :require (flymake sh-script)
+    :require (flymake)
+    :defer t
     :commands (flymake-shell-load)
-    :init (add-hook 'sh-set-shell-hook 'flymake-shell-load))
+    :init
+    (add-hook 'sh-set-shell-hook 'flymake-shell-load))
 #+END_SRC
 
 *** Flycheck
@@ -451,10 +596,13 @@
 
 #+BEGIN_SRC emacs-lisp
   (req-package flycheck
-    :config (progn
-              (global-flycheck-mode 1)
-              ;; (setq-mode-local c++-mode flycheck-clang-language-standard "c++11")
-              ))
+    :defer t
+    :commands (flycheck-mode-on-safe)
+    :init
+    (add-hook 'prog-mode-hook 'flycheck-mode-on-safe))
+    ;; :config
+    ;; (setq-mode-local c++-mode flycheck-clang-language-standard "c++11")
+    ;; (setq flycheck-clang-language-standard "c++11")) ; TODO
 #+END_SRC
 
 ***** Extensions: ycmd
@@ -462,6 +610,7 @@
 #+BEGIN_SRC emacs-lisp
   (req-package flycheck-ycmd
     :require (flycheck ycmd)
+    :demand t
     :config (flycheck-ycmd-setup))
 #+END_SRC
 
@@ -470,26 +619,49 @@
 #+BEGIN_SRC emacs-lisp
   (req-package flycheck-irony
     :require (flycheck irony)
-    :config (add-to-list 'flycheck-checkers 'irony))
+    :demand t
+    :config (flycheck-irony-setup))
 #+END_SRC
 
 * Misc editing goodies
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading misc editing goodies config...")
+#+END_SRC
+
 *** Built-in
 
 #+BEGIN_SRC emacs-lisp
-  (use-package winner
+  (req-package winner
+    :demand t
     :config (winner-mode 1))
 
   ;; scrolling
   (setq scroll-preserve-screen-position t)
 #+END_SRC
 
+*** Third-party
+
+#+BEGIN_SRC emacs-lisp
+  (req-package expand-region
+    :demand t
+    :bind ("C-=" . er/expand-region))
+#+END_SRC
+
 * Misc coding goodies
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading misc coding goodies config...")
+#+END_SRC
+
 *** Built-in
 
 #+BEGIN_SRC emacs-lisp
-  (use-package subword
-    :config (global-subword-mode 1)
+  (req-package subword
+    :defer t
+    :commands (subword-mode)
+    :init
+    (add-hook 'prog-mode-hook 'subword-mode)
     :diminish subword-mode)
 
   ;; www.emacswiki.org/emacs/AutoIndentation
@@ -505,21 +677,28 @@
 
 #+BEGIN_SRC emacs-lisp
   (req-package google-c-style
+    :defer t
     :commands (google-set-c-style google-make-newline-indent)
-    :init (progn
-            (add-hook 'c-mode-common-hook 'google-set-c-style)
-            (add-hook 'c-mode-common-hook 'google-make-newline-indent)))
+    :init
+    (add-hook 'c-mode-common-hook 'google-set-c-style)
+    (add-hook 'c-mode-common-hook 'google-make-newline-indent))
 
   (req-package indent-guide
-    :idle (indent-guide-global-mode 1) ; BUG: init crashes Emacs daemon
-    :config (progn
-              (setq indent-guide-inhibit-modes
-                    (append '(package-menu-mode Info-mode Man-mode)
-                            indent-guide-inhibit-modes)))
-    :diminish indent-guide-mode)
+    :demand t ; FIXME: defer indent-guide-inhibit-modes
+    :commands (indent-guide-mode)
+    :init
+    (add-hook 'prog-mode-hook
+              '(lambda nil
+                 (unless
+                     (cl-some
+                      (quote derived-mode-p)
+                      indent-guide-inhibit-modes)
+                   (indent-guide-mode 1))))
+   :diminish indent-guide-mode)
 
   (req-package yasnippet
-    :config (yas-global-mode 1) :demand t
+    :demand t
+    :config (yas-reload-all)
+    (add-hook 'prog-mode-hook 'yas-minor-mode-on)
     :mode ("/snippets/" . snippet-mode))
 #+END_SRC
-

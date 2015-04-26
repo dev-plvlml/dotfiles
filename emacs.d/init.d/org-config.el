@@ -1,4 +1,4 @@
-(defun my-find-org-hide-face () ; XXX: this is a bugfix for org-find-invisible-foreground
+(defun my-find-org-hide-face () ; BUGFIX: for org-find-invisible-foreground
   (let ((candidates (remove
 		     "unspecified-bg"
 		     (nconc
@@ -11,4 +11,4 @@
 		       '(default-frame-alist initial-frame-alist window-system-default-frame-alist))
 		      (list (face-foreground 'org-hide))))))
     (car (last (remove nil candidates)))))
-(advice-add 'org-find-invisible-foreground :override #'my-find-org-hide-face) ; XXX
+(advice-add 'org-find-invisible-foreground :override #'my-find-org-hide-face)
