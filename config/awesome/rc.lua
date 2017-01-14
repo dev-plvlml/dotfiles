@@ -310,7 +310,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "BackSpace", function () awful.util.spawn(editor_cmd) end),
 
     -- Drop-down terminal
-    awful.key({ modkey,           }, "`",         function () scratch.drop(terminal) end),
+    awful.key({ modkey,           }, "`",         function () scratch.drop(terminal, "top", "center", 1, 0.25, true) end),
 
     -- Standard terminal
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
