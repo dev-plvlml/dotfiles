@@ -42,8 +42,10 @@ udiskie -s &
 urxvtd -q -f -o
 
 ## Emacs daemon
-emacs --daemon
-export EDITOR=emacsclient
+if [ "$session" != exwm ]; then
+    emacs --daemon
+    export EDITOR=emacsclient
+fi
 
 ## Composite manager
 unagi &
@@ -59,6 +61,7 @@ case $session in
     dwm               ) exec dwm;;
     enlightenment     ) exec enlightenment_start;;
     ede               ) exec startede;;
+    exwm              ) exec emacs;;
     fluxbox           ) exec startfluxbox;;
     gnome             ) exec gnome-session;;
     gnome-classic     ) exec gnome-session --session=gnome-classic;;
