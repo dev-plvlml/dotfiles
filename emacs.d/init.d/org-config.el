@@ -1,4 +1,4 @@
-(defun my-find-org-hide-face () ; BUGFIX: for org-find-invisible-foreground
+(defun my-find-org-hide-face () ; NOTE: a bugfix for org-find-invisible-foreground
   (let ((candidates (remove
 		     "unspecified-bg"
 		     (nconc
