@@ -1,4 +1,4 @@
-;;; init.el --- Pavel 'M4E5TR0' Matcula's GNU Emacs config.
+;;; init.el --- Pavel "M4E5TR0" Matcula's GNU Emacs config.
 
 ;;; Commentary:
 
@@ -26,21 +26,24 @@
 ;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") :append)
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") :append)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") :append)
+
 (package-initialize :no-activate)
+(unless package-archive-contents
+  (package-refresh-contents))
 
 (unless (package-installed-p 'org-plus-contrib)
   (message "Installing org-plus-contrib...")
   (package-install 'org-plus-contrib)
-  (message "Installing org-plus-contrib... DONE."))
+  (message "Installing org-plus-contrib...done"))
 
 (unless (package-installed-p 'req-package)
   (message "Installing req-package...")
   (package-install 'req-package)
-  (message "Installing req-package... DONE."))
+  (message "Installing req-package...done"))
 
 (message "Initializing packages...")
 (package-initialize)
-(message "Initializing packages... DONE.")
+(message "Initializing packages...done")
 (setq package-enable-at-startup nil)
 
 (when user-theme-load-path
@@ -55,7 +58,7 @@
 (org-babel-load-file (expand-file-name "init-config.org" user-emacs-directory))
 (message "Requiring packages...")
 (req-package-finish)
-(message "Requiring packages... DONE.")
+(message "Requiring packages...done")
 
 (defconst backup-directory (expand-file-name "backups" user-emacs-directory))
 (make-directory backup-directory :parents)
@@ -70,6 +73,10 @@
   (with-temp-file custom-file nil))
 (load custom-file)
 
-(message "Loading M4E5TR0's GNU Emacs config... DONE.")
+(message "Loading M4E5TR0's GNU Emacs config...done")
+
+;; (require 'exwm)
+;; (require 'exwm-config)
+;; (exwm-config-default)
 
 ;;; init.el ends here
