@@ -1,24 +1,5 @@
 !! No sample file used.
 
-!! Native transparency for rxvt-unicode
-! URxvt*transparent: true
-! URxvt*shading: 110
-
-!! True transparency for rxvt-unicode
-! URxvt*depth: 32
-! URxvt*background: [95]#3f3f3f
-
-!! Scrollbar settings for rxvt-unicode
-URxvt*scrollBar_right: true
-URxvt*scrollstyle: xterm
-
-!! Font settings
-!URxvt*font: -xos4-terminus-medium-r-normal-*-*-140-*-*-c-*-iso8859-5
-!URxvt*boldFont: -xos4-terminus-bold-r-normal-*-*-140-*-*-c-*-iso8859-5
-URxvt*font: xft:MesloLGS:size=9
-XTerm*faceName: MesloLGS:size=9
-Emacs*font: MesloLGS-9
-
 !! Font settings from infinality-bundle 
 Xft.dpi: 96
 Xft.antialias: true
@@ -28,5 +9,33 @@ Xft.hintstyle: hintslight
 Xft.lcdfilter: lcddefault
 Xft.rgba: rgb
 
-!! 256 color support for rxvt-unicode
-! URxvt*termName: xterm-256color
+!! Font settings for programs
+URxvt*font: xft:MesloLGS:size=9
+XTerm*faceName: MesloLGS:size=9
+Emacs*font: MesloLGS-9
+! Vim font is set up in ~/.vimrc
+
+!! Urgency hints for terminals
+URxvt.urgentOnBell: true
+XTerm.bellIsUrgent: true
+
+!! Icon settings for rxvt-unicode
+URxvt.iconFile: /usr/share/icons/Adwaita/scalable/apps/utilities-terminal-symbolic.svg
+
+!! Scrollbar settings for rxvt-unicode
+URxvt.scrollBar: true
+URxvt.scrollBar_right: true
+URxvt.scrollstyle: plain
+URxvt.secondaryScreen: true
+URxvt.secondaryScroll: false
+
+!! Perl extensions for rxvt-unicode
+URxvt.perl-ext-common: default,tabbedex,matcher
+
+!! Multiple tabs for rxvt-unicode
+URxvt.tabbed.new-button: false
+URxvt.tabbed.title: false
+URxvt.tabbed.autohide: true
+
+!! Clickable URLs for rxvt-unicode
+URxvt.matcher.button: 1

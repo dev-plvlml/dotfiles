@@ -11,15 +11,18 @@
   (setq user-mail-address (concat "dev" dot "plvlml" at google-mail)))
 
 (defvar user-theme 'zenburn-care)
-(defvar user-theme-load-path "~/1-linux/themes/zenburn-care")
-(defvar custom-cedet-directory nil) ;; "~/0-linux/builds/cedet.git")
-(defvar custom-reveal.js-root "file:///home/m4e5tr0/0-linux/scripts/reveal-js.git")
+(defvar user-theme-load-path "~/1-linux/themes/zenburn-care/")
+(defvar custom-cedet-load-path nil) ;; "~/0-linux/builds/cedet.git/")
+(defvar custom-gpss-mode-load-path "~/1-coding/projects/gpss-mode.git/")
+(defvar custom-hes-mode-load-path nil) ;; "~/1-linux/builds.public/hes-mode.git/")
+(defvar custom-hl-like-vim-load-path "~/1-coding/projects/highlight-like-vim.git/")
+(defvar custom-org-reveal-root "file:///home/m4e5tr0/0-linux/nobuild/reveal.js.git/")
 
-(when custom-cedet-directory
+(when custom-cedet-load-path
   (setq max-specpdl-size 2600)
   (setq max-lisp-eval-depth 1200)
-  (load-file (expand-file-name "cedet-devel-load.el" custom-cedet-directory))
-  (load-file (expand-file-name "cedet-contrib-load.el" (expand-file-name "contrib" custom-cedet-directory))))
+  (load-file (expand-file-name "cedet-devel-load.el" custom-cedet-load-path))
+  (load-file (expand-file-name "cedet-contrib-load.el" (expand-file-name "contrib" custom-cedet-load-path))))
 
 (require 'package)
 ;; (add-to-list 'package-archives '("elpa" . "http://tromey.com/elpa/") :append)
