@@ -1,14 +1,4 @@
 hardstatus alwayslastline
+hardstatus string '%{= Kw} %S %{Kk}|%{-} %{Ky}%?%-Lw%?%{-}%{b KY}%n*%f %t%{-}%{Ky}%?%+Lw%?%{-}%= %{Kk}|%{-} %H: %l% '
 
-# https://wiki.archlinux.org/index.php/GNU_Screen
-# hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %m-%d %{W} %c %{g}]'
-
-# http://www.fordfrog.com/2012/09/02/71/
-# hardstatus string '%{= G}[ %{G}%H %{g}][%= %{= w}%?%-Lw%?%{= R}%n*%f %t%?%{= R}(%u)%?%{= w}%+Lw%?%= %{= g}][ %{y}Load: %l %{g}][%{B}%Y-%m-%d %{W}%c:%s %{g}]'
-
-# https://gist.github.com/joaopizani/2718397
-# hardstatus string '%{= kG}[%{G}%H%? %1`%?%{g}][%= %{= kw}%-w%{+b yk} %n*%t%?(%u)%? %{-}%+w %=%{g}][%{B}%m/%d %{W}%C%A%{g}]'
-
-hardstatus string '%{= Kw} %{G}%H%{w} |%= %{= Kw}%?%-Lw%?%{=b KR}%n*%f %t%?%{=b KR}(%u)%?%{= Kw}%+Lw%?%= %{= Kw}| %{y}Load: %l '
-
-defscrollback 5000
+defscrollback 9999
