@@ -2,3 +2,4 @@ hardstatus alwayslastline
 hardstatus string '%{= Kw} %S %{Kk}|%{-} %{Ky}%?%-Lw%?%{-}%{b KY}%n*%f %t%{-}%{Ky}%?%+Lw%?%{-}%= %{Kk}|%{-} %H: %l% '
 
 defscrollback 9999
+term xterm-256color
